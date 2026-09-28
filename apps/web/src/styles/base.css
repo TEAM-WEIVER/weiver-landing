@@ -28,7 +28,7 @@ a {
 }
 
 .logo {
-  --logo: url("/assets/wordmark-mask.png");
+  --logo: url("/wordmark-mask.png");
   display: inline-block;
   aspect-ratio: 560/120;
   height: 22px;

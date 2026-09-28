@@ -264,3 +264,19 @@
 .s6:is(.on, .out) .big { animation: rise 0.6s 0.3s both; }
 .s6 p { margin: 12px 0 0; padding: 0 24px; color: var(--film-soft); word-break: keep-all; opacity: 0; }
 .s6:is(.on, .out) p { animation: rise 0.6s 0.6s both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .scene,
+  .scene * {
+    animation: none !important;
+    transition: none !important;
+  }
+  .s4 .stamp,
+  .s4 .tags span,
+  .s4 .profile {
+    opacity: 1;
+  }
+  .s4 .radar .shape {
+    transform: none;
+  }
+}

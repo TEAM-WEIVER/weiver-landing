@@ -4,7 +4,7 @@ const DURATIONS = [3000, 2400, 4300, 3900, 4700, 3500, 3500, 2500];
 // index 3 = 역량 프로필 씬 (RadarChart 카운트업 트리거)
 export const PROFILE_IDX = 3;
 
-export default function ScenePlayer({ scenes, playing, onTogglePause, onSceneEnter }) {
+export default function ScenePlayer({ scenes, playing, onTogglePause, onSceneEnter, sceneClassNames }) {
   const [activeIdx, setActiveIdx] = useState(null);
   const stateRef = useRef({ idx: 0, timer: null, started: 0, remaining: DURATIONS[0] });
   const reduce = useRef(window.matchMedia('(prefers-reduced-motion: reduce)').matches).current;
@@ -26,8 +26,7 @@ export default function ScenePlayer({ scenes, playing, onTogglePause, onSceneEnt
     });
     const target = sceneRefs.current[n];
     if (!target) return;
-    // reflow flush — 원본과 동일하게 transition 재시작
-    void target.offsetWidth;
+    void document.getElementById('film')?.offsetWidth;
     target.classList.remove('out');
     clearTimeout(target._outTimer);
     target.classList.add('on');
@@ -84,19 +83,12 @@ export default function ScenePlayer({ scenes, playing, onTogglePause, onSceneEnt
     }
   }, [playing]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const [paused, setPaused] = useState(false);
-
-  function handlePauseClick() {
-    setPaused(p => !p);
-    onTogglePause();
-  }
-
   return (
     <>
       {scenes.map((scene, i) => (
         <div
           key={i}
-          className={`scene s${i + 1}`}
+          className={`scene ${sceneClassNames ? sceneClassNames[i] : `s${i + 1}`}`}
           ref={el => (sceneRefs.current[i] = el)}
         >
           {scene}
@@ -109,13 +101,19 @@ export default function ScenePlayer({ scenes, playing, onTogglePause, onSceneEnt
           <button
             id="pause"
             className="pause"
-            aria-pressed={paused}
-            aria-label={paused ? '영상 재생' : '영상 일시정지'}
-            onClick={handlePauseClick}
+            aria-pressed={!playing}
+            aria-label={playing ? '영상 일시정지' : '영상 재생'}
+            onClick={onTogglePause}
           >
-            <svg id="icon" viewBox="0 0 14 14" aria-hidden="true">
-              <rect x="2" y="1" width="3.5" height="12" rx="1" />
-              <rect x="8.5" y="1" width="3.5" height="12" rx="1" />
+            <svg viewBox="0 0 14 14" aria-hidden="true">
+              {!playing ? (
+                <path d="M3 1.5v11l9-5.5z" />
+              ) : (
+                <>
+                  <rect x="2" y="1" width="3.5" height="12" rx="1" />
+                  <rect x="8.5" y="1" width="3.5" height="12" rx="1" />
+                </>
+              )}
             </svg>
           </button>
         )}

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import TerrainCanvas from './TerrainCanvas';
 import ScenePlayer from './ScenePlayer';
 
-export default function HeroStage({ scenes, onSceneEnter }) {
+export default function HeroStage({ scenes, sceneClassNames, onSceneEnter }) {
   const filmRef = useRef(null);
   const stageRef = useRef(null);
   const [playing, setPlaying] = useState(true);
@@ -63,6 +63,7 @@ export default function HeroStage({ scenes, onSceneEnter }) {
           <div className="scrim" aria-hidden="true" />
           <ScenePlayer
             scenes={scenes}
+            sceneClassNames={sceneClassNames}
             playing={playing}
             onTogglePause={handleTogglePause}
             onSceneEnter={onSceneEnter}
