@@ -5,6 +5,7 @@ import './styles/base.css';
 import './styles/components.css';
 import './styles/hero.css';
 import './styles/scenes.css';
+import './styles/content.css';
 import App from './App';
 
 createRoot(document.getElementById('root')).render(

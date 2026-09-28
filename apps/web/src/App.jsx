@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import SiteHeader from './components/SiteHeader';
 import HeroStage from './components/hero/HeroStage';
+import ContentSections from './components/ContentSections';
 import Scene1 from './components/hero/scenes/Scene1';
 import Scene2 from './components/hero/scenes/Scene2';
 import Scene3 from './components/hero/scenes/Scene3';
@@ -38,7 +39,7 @@ export default function App() {
       <SiteHeader />
       <main id="top">
         <HeroStage scenes={SCENES} sceneClassNames={SCENE_CLASS_NAMES} onSceneEnter={handleSceneEnter} />
-        {/* Phase 4: content sections */}
+        <ContentSections />
       </main>
     </>
   );
