@@ -1,0 +1,14 @@
+{
+  "name": "weiver-landing",
+  "private": true,
+  "workspaces": [
+    "apps/web"
+  ],
+  "scripts": {
+    "dev:web": "npm run dev --workspace=@weiver/web",
+    "build:web": "npm run build --workspace=@weiver/web"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
