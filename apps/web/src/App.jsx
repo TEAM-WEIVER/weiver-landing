@@ -11,6 +11,8 @@ import Scene5b from './components/hero/scenes/Scene5b';
 import Scene6 from './components/hero/scenes/Scene6';
 import { PROFILE_IDX } from './components/hero/ScenePlayer';
 
+const SCENE_CLASS_NAMES = ['s1', 's2', 's3', 's4', 's4b', 's5a', 's5b', 's6'];
+
 export default function App() {
   const scene4EnterRef = useRef(null);
 
@@ -35,7 +37,7 @@ export default function App() {
     <>
       <SiteHeader />
       <main id="top">
-        <HeroStage scenes={SCENES} onSceneEnter={handleSceneEnter} />
+        <HeroStage scenes={SCENES} sceneClassNames={SCENE_CLASS_NAMES} onSceneEnter={handleSceneEnter} />
         {/* Phase 4: content sections */}
       </main>
     </>
