@@ -8,6 +8,8 @@ export default function ScenePlayer({ scenes, playing, onTogglePause }) {
   const [activeIdx, setActiveIdx] = useState(null);
   const stateRef = useRef({ idx: 0, timer: null, started: 0, remaining: DURATIONS[0] });
   const reduce = useRef(window.matchMedia('(prefers-reduced-motion: reduce)').matches).current;
+  const playingRef = useRef(playing);
+  const isMounted = useRef(false);
 
   // 씬 DOM에 on/out 클래스를 직접 조작 (CSS transition 의존)
   const sceneRefs = useRef([]);
@@ -54,8 +56,16 @@ export default function ScenePlayer({ scenes, playing, onTogglePause }) {
     return () => clearTimeout(stateRef.current.timer);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // playing 변경 → 씬 애니메이션 + 타이머 제어
+  // playing prop → ref 동기화 + pause/resume 처리
   useEffect(() => {
+    playingRef.current = playing;
+
+    // 마운트 시 첫 실행은 init effect가 담당하므로 스킵
+    if (!isMounted.current) {
+      isMounted.current = true;
+      return;
+    }
+
     const film = document.getElementById('film');
     const animEls = film
       ? film.querySelectorAll('.scene.on, .scene.on *, .scene.out, .scene.out *')

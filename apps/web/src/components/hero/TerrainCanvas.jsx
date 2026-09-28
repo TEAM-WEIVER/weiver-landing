@@ -24,6 +24,12 @@ function terrainHeight(x, z, t) {
 export default function TerrainCanvas({ playing }) {
   const canvasRef = useRef(null);
   const stateRef = useRef({ W: 0, H: 0, clock: 0, last: 0, rafId: null });
+  const playingRef = useRef(playing);
+
+  useEffect(() => {
+    playingRef.current = playing;
+    if (!playing) stateRef.current.last = 0;
+  }, [playing]);
 
   useEffect(() => {
     const cv = canvasRef.current;
@@ -103,15 +109,13 @@ export default function TerrainCanvas({ playing }) {
     }
 
     function frame(now) {
-      if (playing) {
+      if (playingRef.current) {
         const dt = s.last ? now - s.last : 0;
         if (dt > 30 || !s.last) {
           s.clock += Math.min(dt, 100);
           s.last = now;
           draw();
         }
-      } else {
-        s.last = 0;
       }
       s.rafId = requestAnimationFrame(frame);
     }
@@ -129,10 +133,6 @@ export default function TerrainCanvas({ playing }) {
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // playing 변경 시 last를 리셋해 clock이 튀지 않게
-  useEffect(() => {
-    stateRef.current.last = 0;
-  }, [playing]);
 
   return <canvas className="terrain" ref={canvasRef} aria-hidden="true" />;
 }
