@@ -1,0 +1,38 @@
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+html {
+  scroll-padding-top: env(safe-area-inset-top, 0px);
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--hi);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.logo {
+  --logo: url("/assets/wordmark-mask.png");
+  display: inline-block;
+  aspect-ratio: 560/120;
+  height: 22px;
+  background: currentColor;
+  -webkit-mask: var(--logo) center/contain no-repeat;
+  mask: var(--logo) center/contain no-repeat;
+}

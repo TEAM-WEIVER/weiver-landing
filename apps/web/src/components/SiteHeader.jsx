@@ -1,0 +1,24 @@
+import { useEffect, useRef } from 'react';
+
+export default function SiteHeader() {
+  const headRef = useRef(null);
+
+  useEffect(() => {
+    function onScroll() {
+      const stage = document.getElementById('stage');
+      if (!stage || !headRef.current) return;
+      headRef.current.classList.toggle('solid', stage.getBoundingClientRect().bottom <= 0);
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  return (
+    <header className="site-head" ref={headRef} id="head">
+      <a className="wordmark" href="#top" aria-label="weiver 홈">
+        <span className="logo" role="img" aria-label="weiver" />
+      </a>
+      <a className="btn btn-sm" href="#reserve">사전예약</a>
+    </header>
+  );
+}
