@@ -4,7 +4,7 @@ const DURATIONS = [3000, 2400, 4300, 3900, 4700, 3500, 3500, 2500];
 // index 3 = 역량 프로필 씬 (RadarChart 카운트업 트리거)
 export const PROFILE_IDX = 3;
 
-export default function ScenePlayer({ scenes, playing, onTogglePause }) {
+export default function ScenePlayer({ scenes, playing, onTogglePause, onSceneEnter }) {
   const [activeIdx, setActiveIdx] = useState(null);
   const stateRef = useRef({ idx: 0, timer: null, started: 0, remaining: DURATIONS[0] });
   const reduce = useRef(window.matchMedia('(prefers-reduced-motion: reduce)').matches).current;
@@ -32,6 +32,7 @@ export default function ScenePlayer({ scenes, playing, onTogglePause }) {
     clearTimeout(target._outTimer);
     target.classList.add('on');
     setActiveIdx(n);
+    if (onSceneEnter) onSceneEnter(n);
   }
 
   function schedule(ms) {
