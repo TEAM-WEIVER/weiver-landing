@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: weiver-landing-api
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:}
+    username: ${SPRING_DATASOURCE_USERNAME:}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
+  lifecycle:
+    timeout-per-shutdown-phase: 20s
+
+server:
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+app:
+  web-allowed-origin: ${WEB_ALLOWED_ORIGIN:http://localhost:5173}

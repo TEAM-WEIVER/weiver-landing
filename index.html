@@ -1,216 +1,3122 @@
 <!doctype html>
 <html lang="ko">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="한 번의 서류 등록과 AI 면접으로 여러 기업의 컨택을 준비하는 역매칭 구직 서비스, weiver 데모 사전예약" />
-    <meta name="theme-color" content="#334155" />
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
     <title>weiver | 한 번 준비하고, 여러 기업에게 먼저 제안받으세요</title>
-    <link rel="icon" type="image/png" href="./assets/weiver-mark.png" />
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
-    <link rel="stylesheet" href="./styles.css" />
+    <link rel="icon" type="image/png" href="assets/favicon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        /* weiver 브랜드 토큰 */
+        --slate-500: #64748b;
+        --slate-700: #334155;
+        --text-primary: #0f172a;
+        --teal: #2dd4bf;
+        --blue: #60a5fa;
+        --bg: var(--slate-500);
+        --surface: #ffffff;
+        --ink: var(--text-primary);
+        --muted: var(--slate-500);
+        --line: #e2e8f0;
+        --btn: var(--slate-700);
+        --btn-ink: #ffffff;
+        --film: #030407;
+        --film-ink: #f1f5f9;
+        --film-soft: #94a3b8;
+        --hi: #5eead4;
+        --font:
+          "IBM Plex Sans KR", "Pretendard", "Apple SD Gothic Neo",
+          "Malgun Gothic", system-ui, sans-serif;
+        box-sizing: border-box;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --bg: var(--slate-500);
+          --surface: #1e293b;
+          --ink: #e2e8f0;
+          --muted: #94a3b8;
+          --line: #334155;
+          --btn: #e2e8f0;
+          --btn-ink: #0f172a;
+        }
+      }
+      :root[data-theme="dark"] {
+        --bg: var(--slate-500);
+        --surface: #1e293b;
+        --ink: #e2e8f0;
+        --muted: #94a3b8;
+        --line: #334155;
+        --btn: #e2e8f0;
+        --btn-ink: #0f172a;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: inherit;
+      }
+      html {
+        scroll-padding-top: env(safe-area-inset-top, 0px);
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: var(--font);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+      a {
+        color: inherit;
+      }
+      :focus-visible {
+        outline: 3px solid var(--hi);
+        outline-offset: 3px;
+        border-radius: 6px;
+      }
+
+      .logo {
+        --logo: url("assets/wordmark-mask.png");
+        display: inline-block;
+        aspect-ratio: 560/120;
+        height: 22px;
+        background: currentColor;
+        -webkit-mask: var(--logo) center/contain no-repeat;
+        mask: var(--logo) center/contain no-repeat;
+      }
+
+      /* header */
+      .site-head {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 50;
+        padding: calc(14px + env(safe-area-inset-top, 0px))
+          clamp(18px, 4vw, 40px) 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: #fff;
+        transition:
+          background 0.3s,
+          color 0.3s,
+          box-shadow 0.3s;
+      }
+      .site-head.solid {
+        background: rgba(15, 23, 42, 0.92);
+        backdrop-filter: blur(14px);
+        color: #fff;
+        box-shadow: 0 1px 0 rgba(255, 255, 255, 0.16);
+      }
+      .wordmark {
+        display: inline-flex;
+        color: inherit;
+        text-decoration: none;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 0;
+        border-radius: 10px;
+        font: inherit;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+      }
+      .btn-sm {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+        background: #fff;
+        color: var(--text-primary);
+      }
+      .site-head.solid .btn-sm {
+        background: #fff;
+        color: var(--text-primary);
+      }
+
+      /* stage */
+      .stage {
+        position: relative;
+        height: calc(100svh + 112vh);
+        background: var(--film);
+      }
+      .hero {
+        position: sticky;
+        top: 0;
+        height: 100svh;
+        overflow: hidden;
+        background: var(--film);
+      }
+      .film {
+        --p: 0;
+        position: absolute;
+        inset: 0;
+        background: var(--film);
+        color: var(--film-ink);
+        transform: scale(calc(1 - 0.08 * var(--p)));
+        border-radius: calc(28px * var(--p));
+        filter: brightness(calc(1 - 0.3 * var(--p)));
+        transform-origin: 50% 40%;
+        overflow: hidden;
+        will-change: transform;
+      }
+      .terrain {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      .scrim {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+        background:
+          radial-gradient(
+            60% 45% at 50% 44%,
+            rgba(3, 4, 7, 0.6),
+            transparent 70%
+          ),
+          linear-gradient(
+            to bottom,
+            rgba(3, 4, 7, 0.35),
+            transparent 30%,
+            transparent 55%,
+            rgba(3, 4, 7, 0.85)
+          );
+      }
+      .film-ui {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 4;
+        padding: 0 clamp(18px, 4vw, 40px)
+          calc(22px + env(safe-area-inset-bottom, 0px));
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 16px;
+        opacity: calc(1 - var(--p) * 2.2);
+      }
+      .film-ui .intro {
+        font-size: 0.9rem;
+        color: var(--film-soft);
+        margin: 0;
+      }
+      .cue {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.78rem;
+        color: var(--film-soft);
+        position: absolute;
+        left: 50%;
+        bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+        transform: translateX(-50%);
+        z-index: 4;
+        opacity: calc(1 - var(--p) * 2.2);
+      }
+      .cue i {
+        display: block;
+        width: 1px;
+        height: 34px;
+        background: linear-gradient(var(--film-soft), transparent);
+        animation: cue 1.8s ease-in-out infinite;
+        transform-origin: top;
+      }
+      @keyframes cue {
+        0% {
+          transform: scaleY(0);
+        }
+        50% {
+          transform: scaleY(1);
+        }
+        100% {
+          transform: scaleY(1);
+          opacity: 0;
+        }
+      }
+      .pause {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--film-ink);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        cursor: pointer;
+        flex: none;
+      }
+      .pause svg {
+        width: 14px;
+        height: 14px;
+        fill: currentColor;
+      }
+      @media (max-width: 560px) {
+        .film-ui .intro {
+          display: none;
+        }
+      }
+
+      /* scenes */
+      .scene {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        opacity: 0;
+        visibility: hidden;
+        transition:
+          opacity 0.3s,
+          visibility 0.3s;
+      }
+      .scene.on {
+        opacity: 1;
+        visibility: visible;
+        transition:
+          opacity 0.45s 0.18s,
+          visibility 0s 0.18s;
+      }
+      .cap {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+        margin: 0;
+        text-align: center;
+        font-size: clamp(1.3rem, 3.4vw, 2.2rem);
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        padding: 0 20px;
+        word-break: keep-all;
+      }
+      .scene:is(.on, .out) .cap {
+        animation: rise 0.6s 0.15s both;
+      }
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(14px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      @keyframes fade {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      .center {
+        position: absolute;
+        left: 50%;
+        top: 44%;
+        transform: translate(-50%, -50%);
+      }
+      .card {
+        background: #fff;
+        color: var(--text-primary);
+        border-radius: 16px;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+      }
+
+      /* s1, s2 */
+      .win {
+        position: absolute;
+        left: 50%;
+        top: 42%;
+        width: min(290px, 64vw);
+        background: #fff;
+        color: var(--text-primary);
+        border-radius: 12px;
+        padding: 12px 14px 16px;
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+        transform: translate(
+            calc(-50% + var(--x) * var(--sx, 1)),
+            calc(-50% + var(--y) * var(--sx, 1))
+          )
+          rotate(var(--r));
+      }
+      .win b {
+        display: block;
+        font-size: 0.82rem;
+        margin-bottom: 10px;
+      }
+      .win span {
+        display: block;
+        height: 7px;
+        border-radius: 4px;
+        background: #e2e8f0;
+        margin-top: 7px;
+      }
+      .win span:nth-child(3) {
+        width: 80%;
+      }
+      .win span:nth-child(4) {
+        width: 55%;
+      }
+      .s1:is(.on, .out) .win {
+        animation: winIn 0.35s var(--d) both;
+      }
+      @keyframes winIn {
+        from {
+          opacity: 0;
+          transform: translate(
+              calc(-50% + var(--x) * var(--sx, 1)),
+              calc(-50% + var(--y) * var(--sx, 1) + 30px)
+            )
+            rotate(var(--r)) scale(0.9);
+        }
+      }
+      @media (max-width: 560px) {
+        .win {
+          --sx: 0.45;
+          width: 62vw;
+        }
+      }
+      .counter {
+        position: absolute;
+        top: calc(104px + env(safe-area-inset-top, 0px));
+        right: clamp(18px, 5vw, 56px);
+        text-align: right;
+        font-size: 0.8rem;
+        color: var(--film-soft);
+      }
+      .counter output {
+        display: block;
+        font-size: 2.4rem;
+        font-weight: 700;
+        color: #fca5a5;
+        letter-spacing: -0.04em;
+        line-height: 1.1;
+        font-variant-numeric: tabular-nums;
+      }
+      .s2:is(.on, .out) .win {
+        animation: collapse 0.7s var(--d) cubic-bezier(0.6, 0, 0.4, 1) forwards;
+      }
+      @keyframes collapse {
+        to {
+          opacity: 0;
+          transform: translate(-50%, -50%) rotate(0) scale(0.15);
+        }
+      }
+      .onedoc {
+        width: min(250px, 58vw);
+        padding: 18px;
+        opacity: 0;
+        box-shadow:
+          0 0 0 6px rgba(94, 234, 212, 0.22),
+          0 20px 50px rgba(0, 0, 0, 0.4);
+      }
+      .s2:is(.on, .out) .onedoc {
+        animation: pop 0.5s 1s cubic-bezier(0.3, 1.4, 0.5, 1) forwards;
+      }
+      .onedoc b {
+        display: block;
+        margin-bottom: 8px;
+      }
+      .onedoc ul {
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 4px;
+      }
+      .onedoc li {
+        font-size: 0.85rem;
+        list-style: none;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .onedoc li::before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--teal);
+      }
+      @keyframes pop {
+        from {
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(0.6);
+        }
+        to {
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(1);
+        }
+      }
+
+      /* browser frame used by s3, s5 */
+      .frame {
+        border-radius: 14px;
+        overflow: hidden;
+        background: #f8fafc;
+        box-shadow:
+          0 30px 80px rgba(0, 0, 0, 0.55),
+          0 0 0 1px rgba(255, 255, 255, 0.08);
+      }
+      .frame .bar {
+        height: 30px;
+        background: #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.72rem;
+        color: var(--slate-500);
+        gap: 6px;
+      }
+      .frame .bar img {
+        width: 14px;
+        height: 14px;
+        border-radius: 3px;
+      }
+      .frame .shot {
+        position: relative;
+        overflow: hidden;
+      }
+      .frame .shot > img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+
+      /* s3: 서류 등록 + AI 면접 (실제 화면) */
+      .s3 .frame {
+        width: min(760px, 88vw, calc((100svh - 300px) * 1.75));
+        opacity: 0;
+      }
+      .s3:is(.on, .out) .frame {
+        animation: pop 0.6s 0.55s cubic-bezier(0.25, 1.2, 0.4, 1) both;
+      }
+      .s3:is(.on, .out) .shot > img {
+        animation: kb 4.6s 0.6s linear both;
+      }
+      @keyframes kb {
+        from {
+          transform: scale(1);
+        }
+        to {
+          transform: scale(1.045);
+        }
+      }
+      .uploaded {
+        position: absolute;
+        left: max(4vw, calc(50% - 440px));
+        top: calc(44% - min(230px, 32vw));
+        z-index: 2;
+        width: 200px;
+        padding: 14px 16px;
+        opacity: 0;
+      }
+      .s3:is(.on, .out) .uploaded {
+        animation: rise 0.45s 0.05s both;
+      }
+      .uploaded b {
+        display: block;
+        font-size: 0.82rem;
+        margin-bottom: 6px;
+      }
+      .uploaded div {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.78rem;
+        color: var(--slate-500);
+        padding: 3px 0;
+      }
+      .uploaded em {
+        font-style: normal;
+        color: #0d9488;
+        font-weight: 600;
+      }
+      .analyzing {
+        position: absolute;
+        right: max(4vw, calc(50% - 450px));
+        top: calc(44% + min(190px, 26vw));
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(15, 23, 42, 0.9);
+        color: #e2e8f0;
+        font-size: 0.8rem;
+        padding: 8px 14px;
+        border-radius: 999px;
+        border: 1px solid rgba(94, 234, 212, 0.4);
+        opacity: 0;
+      }
+      .s3:is(.on, .out) .analyzing {
+        animation: rise 0.4s 1.4s both;
+      }
+      .analyzing i {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--hi);
+        box-shadow: 0 0 0 0 rgba(94, 234, 212, 0.6);
+        animation: ping 1.2s infinite;
+      }
+      @keyframes ping {
+        to {
+          box-shadow: 0 0 0 10px rgba(94, 234, 212, 0);
+        }
+      }
+      @media (max-width: 560px) {
+        .uploaded {
+          width: 160px;
+          padding: 10px 12px;
+          top: calc(44% - 150px);
+        }
+        .analyzing {
+          top: calc(44% + 105px);
+        }
+      }
+
+      /* s4: 역량 프로필 (리포트 디자인 기반) */
+      .profile {
+        width: min(600px, 90vw);
+        padding: 22px;
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        gap: 22px;
+        align-items: center;
+      }
+      .s4:is(.on, .out) .profile {
+        animation: pop 0.5s cubic-bezier(0.3, 1.3, 0.5, 1) both;
+      }
+      .radar {
+        width: 100%;
+        height: auto;
+        overflow: visible;
+      }
+      .radar text {
+        font-size: 9.5px;
+        fill: var(--slate-500);
+        font-family: var(--font);
+      }
+      .radar .shape {
+        transform-origin: 100px 100px;
+        transform: scale(0);
+      }
+      .s4:is(.on, .out) .radar .shape {
+        animation: grow 0.9s 0.45s cubic-bezier(0.3, 1.2, 0.5, 1) forwards;
+      }
+      @keyframes grow {
+        to {
+          transform: scale(1);
+        }
+      }
+      .who {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+      .who img {
+        width: 48px;
+        height: 48px;
+        border-radius: 10px;
+        object-fit: cover;
+      }
+      .who b {
+        font-size: 1.05rem;
+        display: block;
+        line-height: 1.3;
+      }
+      .who small {
+        color: var(--slate-500);
+        font-size: 0.75rem;
+      }
+      .stamp {
+        margin-left: auto;
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: #0f766e;
+        background: #ccfbf1;
+        padding: 4px 9px;
+        border-radius: 999px;
+        opacity: 0;
+        white-space: nowrap;
+      }
+      .s4:is(.on, .out) .stamp {
+        animation: stamp 0.4s 1.5s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+      }
+      @keyframes stamp {
+        from {
+          opacity: 0;
+          transform: scale(1.8);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      .scores {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      .scores > div {
+        border: 1px solid #e2e8f0;
+        background: #f1f5f9;
+        border-radius: 10px;
+        padding: 8px 12px;
+      }
+      .scores small {
+        display: block;
+        font-size: 0.68rem;
+        color: var(--slate-500);
+      }
+      .scores strong {
+        font-size: 1.6rem;
+        line-height: 1.1;
+        font-variant-numeric: tabular-nums;
+      }
+      .scores span {
+        font-weight: 600;
+        font-size: 0.92rem;
+      }
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .tags span {
+        font-size: 0.78rem;
+        border: 1px solid var(--teal);
+        background: #f0fdfa;
+        color: #0f766e;
+        padding: 3px 9px;
+        border-radius: 6px;
+        opacity: 0;
+      }
+      .s4:is(.on, .out) .tags span {
+        animation: rise 0.35s calc(1s + var(--k) * 0.15s) both;
+      }
+      @media (max-width: 560px) {
+        .profile {
+          grid-template-columns: 1fr;
+          gap: 10px;
+          padding: 16px;
+        }
+        .radar {
+          width: 170px;
+          margin: 0 auto;
+          display: block;
+        }
+      }
+
+      /* s4b: 개인 대시보드 (서류 제출 + AI 채용 프로세스 진행 상황) */
+      .s4b .frame {
+        width: min(900px, 92vw, calc((100svh - 300px) * 2.8));
+        opacity: 0;
+      }
+      .s4b:is(.on, .out) .frame {
+        animation: pop 0.55s 0.05s cubic-bezier(0.25, 1.2, 0.4, 1) both;
+      }
+      .dash-shot {
+        background: #f8fafc;
+      }
+      .cam {
+        transform-origin: 70% 75%;
+      }
+      .s4b:is(.on, .out) .cam {
+        animation: zoomIn 1.8s 2.8s cubic-bezier(0.65, 0, 0.25, 1) both;
+      }
+      @keyframes zoomIn {
+        to {
+          transform: scale(var(--z, 1.75));
+        }
+      }
+      .dash {
+        --dk: #334155;
+        --chip: #f1f5f9;
+        --bd: #e2e8f0;
+        --ok: #2dd4bf;
+        --ok-t: #14b8a6;
+        --run: #60a5fa;
+        position: relative;
+        width: 1316px;
+        display: flex;
+        background: #f8fafc;
+        color: #0f172a;
+        font-family: var(--font);
+        font-size: 14px;
+        line-height: 1.4;
+        letter-spacing: -0.01em;
+        transform-origin: 0 0;
+      }
+      .dash h4 {
+        margin: 0;
+        font-size: 19px;
+        font-weight: 600;
+        letter-spacing: -0.03em;
+      }
+      .d-side {
+        flex: none;
+        width: 64px;
+        background: var(--dk);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 0 16px;
+      }
+      .d-side > img {
+        width: 44px;
+        height: 44px;
+      }
+      .d-nav {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        background: #475569;
+        display: grid;
+        place-items: center;
+      }
+      .d-side svg {
+        width: 22px;
+        height: 22px;
+        fill: #cbd5e1;
+      }
+      .d-side .grow {
+        flex: 1;
+      }
+      .d-me {
+        width: 40px;
+        height: 40px;
+        border-radius: 6px;
+        background: #e2e8f0;
+      }
+      .d-main {
+        flex: 1;
+        min-width: 0;
+        padding: 30px 36px 32px;
+        display: grid;
+        gap: 22px;
+      }
+      .d-card {
+        background: #fff;
+        border: 1px solid var(--bd);
+        border-radius: 20px;
+      }
+      .d-prof {
+        display: flex;
+        align-items: center;
+        gap: 36px;
+        padding: 30px 32px;
+      }
+      .d-ava {
+        width: 90px;
+        height: 112px;
+        border-radius: 6px;
+        object-fit: cover;
+        flex: none;
+      }
+      .d-id b {
+        display: block;
+        font-size: 19px;
+        font-weight: 600;
+        margin-bottom: 12px;
+      }
+      .d-id span {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        color: #475569;
+        font-size: 13.5px;
+        margin-top: 6px;
+      }
+      .d-id svg {
+        width: 15px;
+        height: 15px;
+        fill: #94a3b8;
+      }
+      .d-comp {
+        padding-left: 64px;
+        border-left: 1px solid #cbd5e1;
+        align-self: stretch;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .d-chips {
+        display: flex;
+        gap: 14px;
+        margin-top: 14px;
+      }
+      .chip {
+        position: relative;
+        width: 136px;
+        height: 78px;
+        padding: 14px;
+        border-radius: 8px;
+        background: var(--chip);
+        border: 1px solid var(--bd);
+      }
+      .chip > span:first-child {
+        display: block;
+        font-size: 14.5px;
+        font-weight: 500;
+        margin-bottom: 8px;
+      }
+      .chip .ico {
+        position: absolute;
+        right: 12px;
+        bottom: 12px;
+        width: 24px;
+        height: 24px;
+      }
+      .d-acts {
+        margin-left: auto;
+        display: grid;
+        gap: 14px;
+      }
+      .d-btn {
+        display: grid;
+        place-items: center;
+        width: 122px;
+        height: 42px;
+        border-radius: 8px;
+        font-size: 13px;
+        color: #475569;
+        border: 1px solid #cbd5e1;
+        background: #fff;
+      }
+      .d-btn.off {
+        border-color: var(--bd);
+        background: var(--bd);
+        color: #64748b;
+      }
+      .d-row {
+        display: grid;
+        grid-template-columns: 1fr 386px;
+        gap: 22px;
+        align-items: start;
+      }
+      .d-proc {
+        padding: 30px 32px 32px;
+      }
+      .d-steps {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+        margin-top: 18px;
+      }
+      .step {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        height: 82px;
+        padding: 0 18px;
+        border-radius: 6px;
+        background: var(--chip);
+        border: 1px solid var(--bd);
+      }
+      .step b {
+        display: block;
+        font-size: 16.5px;
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+      .step .ico {
+        width: 32px;
+        height: 32px;
+        flex: none;
+      }
+      .d-cta {
+        background: var(--dk);
+        color: #fff;
+        border-radius: 20px;
+        padding: 30px 20px 20px;
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.16);
+      }
+      .d-cta b {
+        display: block;
+        font-size: 19px;
+        font-weight: 600;
+        letter-spacing: -0.03em;
+      }
+      .d-cta p {
+        margin: 10px 0 24px;
+        font-size: 13px;
+        line-height: 1.55;
+        color: #e2e8f0;
+      }
+      .d-go {
+        height: 42px;
+        border-radius: 8px;
+        background: var(--ok);
+        color: #0f172a;
+        font-size: 13px;
+        font-weight: 600;
+        place-items: center;
+      }
+      .dash .d-go.sw > span {
+        color: inherit;
+      }
+      .s4b:is(.on, .out) .d-go {
+        animation: goDone 0.35s 1.55s both;
+      }
+      @keyframes goDone {
+        to {
+          background: #e2e8f0;
+          color: #64748b;
+          font-weight: 400;
+        }
+      }
+
+      /* 상태 텍스트 전환 */
+      .sw {
+        display: grid;
+        font-size: 13px;
+      }
+      .sw > span {
+        grid-area: 1/1;
+      }
+      .sw > span:first-child {
+        color: #94a3b8;
+      }
+      .sw > span:last-child {
+        color: var(--ok-t);
+        opacity: 0;
+      }
+      .sw.run > span:last-child {
+        color: var(--run);
+      }
+      .s4b:is(.on, .out) .sw > span:first-child {
+        animation: swOut 0.2s var(--d) both;
+      }
+      .s4b:is(.on, .out) .sw > span:last-child {
+        animation: swIn 0.3s var(--d) both;
+      }
+      @keyframes swOut {
+        to {
+          opacity: 0;
+          transform: translateY(-4px);
+        }
+      }
+      @keyframes swIn {
+        from {
+          opacity: 0;
+          transform: translateY(4px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      /* 상태 아이콘: 대기(회색) → 완료(체크) / 진행중(점) */
+      .ico {
+        position: relative;
+        border-radius: 50%;
+        background: #e2e8f0;
+      }
+      .ico::before {
+        content: "";
+        position: absolute;
+        inset: 28%;
+        border-radius: 50%;
+        background: #cbd5e1;
+      }
+      .ico > i {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        transform: scale(0);
+        background: var(--ok)
+          url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5l2.5 2.5L12 5.5' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+          center/62% no-repeat;
+      }
+      .step .ico > i {
+        inset: 4px;
+        box-shadow: 0 0 0 4px #ccfbf1;
+      }
+      .ico.run > i {
+        background: var(--run);
+        box-shadow: 0 0 0 4px #dbeafe;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 2.5px;
+      }
+      .ico.run > i > u {
+        width: 3.5px;
+        height: 3.5px;
+        border-radius: 50%;
+        background: #fff;
+      }
+      .s4b:is(.on, .out) .ico > i {
+        animation: check 0.45s var(--d) cubic-bezier(0.3, 1.7, 0.5, 1) forwards;
+      }
+      .s4b:is(.on, .out) .ico.run > i > u {
+        animation: dot 1s calc(var(--d) + 0.4s + var(--k) * 0.15s) ease-in-out
+          infinite;
+      }
+      @keyframes check {
+        to {
+          transform: scale(1);
+        }
+      }
+      @keyframes dot {
+        0%,
+        60%,
+        100% {
+          transform: none;
+          opacity: 0.55;
+        }
+        30% {
+          transform: translateY(-3px);
+          opacity: 1;
+        }
+      }
+      .s4b:is(.on, .out) .step {
+        animation: flash 0.9s var(--d) both;
+      }
+      @keyframes flash {
+        0% {
+          box-shadow: 0 0 0 0 rgba(45, 212, 191, 0.55);
+        }
+        100% {
+          box-shadow: 0 0 0 14px rgba(45, 212, 191, 0);
+        }
+      }
+      .s4b:is(.on, .out) .step.match {
+        animation: flashRun 1.4s var(--d) both;
+      }
+      @keyframes flashRun {
+        0% {
+          box-shadow: 0 0 0 0 rgba(96, 165, 250, 0.6);
+          border-color: var(--bd);
+        }
+        100% {
+          box-shadow: 0 0 0 14px rgba(96, 165, 250, 0);
+          border-color: #93c5fd;
+          background: #fff;
+        }
+      }
+
+      .matching {
+        position: absolute;
+        right: max(4vw, calc(50% - 450px));
+        top: calc(44% + min(186px, 19vw));
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(15, 23, 42, 0.9);
+        color: #e2e8f0;
+        font-size: 0.8rem;
+        padding: 8px 14px;
+        border-radius: 999px;
+        border: 1px solid rgba(96, 165, 250, 0.5);
+        opacity: 0;
+      }
+      .matching i {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--blue);
+        animation: pingB 1.2s infinite;
+      }
+      @keyframes pingB {
+        from {
+          box-shadow: 0 0 0 0 rgba(96, 165, 250, 0.7);
+        }
+        to {
+          box-shadow: 0 0 0 10px rgba(96, 165, 250, 0);
+        }
+      }
+      .s4b:is(.on, .out) .matching {
+        animation: rise 0.4s 3.1s both;
+      }
+
+      /* 좁은 화면: 대시보드를 모바일 배치로 */
+      .dash.m {
+        width: 420px;
+      }
+      .dash.m .d-side,
+      .dash.m .d-acts,
+      .dash.m .d-cta,
+      .dash.m .d-id span {
+        display: none;
+      }
+      .dash.m .d-main {
+        padding: 16px;
+        gap: 14px;
+      }
+      .dash.m .d-prof {
+        flex-wrap: wrap;
+        gap: 12px 14px;
+        padding: 18px;
+      }
+      .dash.m .d-ava {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+      }
+      .dash.m .d-id b {
+        margin: 0;
+        font-size: 17px;
+      }
+      .dash.m .d-comp {
+        flex-basis: 100%;
+        padding: 14px 0 0;
+        border-left: 0;
+        border-top: 1px solid var(--bd);
+      }
+      .dash.m .dash h4,
+      .dash.m h4 {
+        font-size: 16px;
+      }
+      .dash.m .d-chips {
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .dash.m .chip {
+        flex: 1;
+        width: auto;
+        height: 70px;
+        padding: 10px 12px;
+      }
+      .dash.m .d-row {
+        grid-template-columns: 1fr;
+      }
+      .dash.m .d-proc {
+        padding: 18px;
+      }
+      .dash.m .d-steps {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        margin-top: 12px;
+      }
+      .dash.m .step {
+        height: 60px;
+      }
+      @media (max-width: 560px) {
+        .matching {
+          display: none;
+        }
+      }
+
+      /* s5a: 기업 화면에서 컨택 */
+      .s5a .frame {
+        width: min(900px, 92vw, calc((100svh - 300px) * 3));
+        opacity: 0;
+      }
+      .s5a:is(.on, .out) .frame {
+        animation: pop 0.55s 0.05s cubic-bezier(0.25, 1.2, 0.4, 1) both;
+      }
+      .cursor {
+        position: absolute;
+        left: 62%;
+        top: 88%;
+        width: 22px;
+        height: 22px;
+        z-index: 3;
+        opacity: 0;
+        filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35));
+      }
+      .s5a:is(.on, .out) .cursor {
+        animation:
+          toBtn 1.1s 0.75s cubic-bezier(0.5, 0, 0.2, 1) both,
+          press 0.18s 1.95s both;
+      }
+      @keyframes toBtn {
+        0% {
+          opacity: 0;
+          left: 62%;
+          top: 88%;
+        }
+        15% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 1;
+          left: 90.2%;
+          top: 22%;
+        }
+      }
+      @keyframes press {
+        50% {
+          transform: scale(0.8);
+        }
+      }
+      .hit {
+        position: absolute;
+        left: 85.8%;
+        top: 18.5%;
+        width: 8.6%;
+        height: 9.4%;
+        border-radius: 8px;
+        box-shadow: 0 0 0 0 rgba(45, 212, 191, 0);
+        opacity: 0;
+      }
+      .s5a:is(.on, .out) .hit {
+        animation: hit 0.7s 2s both;
+      }
+      @keyframes hit {
+        0% {
+          opacity: 1;
+          box-shadow: 0 0 0 0 rgba(45, 212, 191, 0.9);
+        }
+        100% {
+          opacity: 1;
+          box-shadow: 0 0 0 18px rgba(45, 212, 191, 0);
+        }
+      }
+      .sent {
+        position: absolute;
+        right: max(4vw, calc(50% - 450px));
+        top: calc(44% + min(130px, 15vw));
+        background: #fff;
+        color: var(--text-primary);
+        font-size: 0.85rem;
+        font-weight: 600;
+        padding: 10px 14px;
+        border-radius: 10px;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        box-shadow: 0 14px 34px rgba(0, 0, 0, 0.4);
+        opacity: 0;
+      }
+      .sent::before {
+        content: "";
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: var(--teal)
+          url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5l2.5 2.5L12 5.5' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+          center/14px no-repeat;
+      }
+      .s5a:is(.on, .out) .sent {
+        animation: rise 0.4s 2.35s both;
+      }
+      @media (max-width: 560px) {
+        .sent {
+          top: calc(44% + 90px);
+        }
+      }
+
+      /* s5b: 지원자에게 도착한 제안들 */
+      .mini {
+        width: min(230px, 56vw);
+        padding: 12px 14px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow:
+          0 0 0 8px rgba(94, 234, 212, 0.16),
+          0 20px 50px rgba(0, 0, 0, 0.4);
+      }
+      .mini img {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        object-fit: cover;
+      }
+      .mini b {
+        font-size: 0.9rem;
+        display: block;
+        line-height: 1.3;
+      }
+      .mini small {
+        font-size: 0.72rem;
+        color: var(--slate-500);
+      }
+      .note {
+        position: absolute;
+        left: 50%;
+        top: 44%;
+        width: min(280px, 76vw);
+        word-break: keep-all;
+        background: rgba(255, 255, 255, 0.97);
+        color: var(--text-primary);
+        border-radius: 12px;
+        padding: 10px 12px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        font-size: 0.82rem;
+        line-height: 1.35;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+        opacity: 0;
+        transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y)));
+      }
+      .note .co {
+        flex: none;
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        background: var(--slate-700);
+        color: #fff;
+        display: grid;
+        place-items: center;
+        font-weight: 700;
+        font-size: 0.85rem;
+      }
+      .s5b:is(.on, .out) .note {
+        animation: reach 0.6s var(--d) cubic-bezier(0.2, 0.9, 0.3, 1) both;
+      }
+      @keyframes reach {
+        from {
+          opacity: 0;
+          transform: translate(
+            calc(-50% + var(--x) * 1.8),
+            calc(-50% + var(--y) * 1.8)
+          );
+        }
+        to {
+          opacity: 1;
+          transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y)));
+        }
+      }
+      @media (max-width: 560px) {
+        .note {
+          --x: 0px !important;
+        }
+        .n1 {
+          --y: -130px !important;
+        }
+        .n2 {
+          --y: 95px !important;
+        }
+        .n3 {
+          --y: 165px !important;
+        }
+      }
+
+      /* s6 */
+      .s6 .center {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .s6 .icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 14px;
+        opacity: 0;
+      }
+      .s6:is(.on, .out) .icon {
+        animation: pop2 0.5s cubic-bezier(0.3, 1.5, 0.5, 1) both;
+      }
+      @keyframes pop2 {
+        from {
+          opacity: 0;
+          transform: scale(0.5);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      .s6 .big {
+        height: clamp(44px, 9vw, 88px);
+        margin-top: 22px;
+        color: #fff;
+        opacity: 0;
+      }
+      .s6:is(.on, .out) .big {
+        animation: rise 0.6s 0.3s both;
+      }
+      .s6 p {
+        margin: 12px 0 0;
+        padding: 0 24px;
+        color: var(--film-soft);
+        word-break: keep-all;
+        opacity: 0;
+      }
+      .s6:is(.on, .out) p {
+        animation: rise 0.6s 0.6s both;
+      }
+
+      /* content */
+      .content {
+        position: relative;
+        z-index: 10;
+        margin-top: 0;
+        background: linear-gradient(
+          180deg,
+          var(--film) 0%,
+          #101722 28%,
+          #334155 66%,
+          var(--bg) 100%
+        );
+      }
+      .wrap {
+        max-width: 1040px;
+        margin: 0 auto;
+        padding: 0 clamp(20px, 5vw, 40px);
+      }
+      .lead {
+        padding: clamp(56px, 9vw, 104px) 0 56px;
+      }
+      .lead .tagline {
+        margin: 0 0 14px;
+        color: #dbeafe;
+        font-weight: 500;
+      }
+      .lead h1 {
+        margin: 0;
+        color: #fff;
+        font-size: clamp(2rem, 5.4vw, 3.6rem);
+        line-height: 1.2;
+        letter-spacing: -0.04em;
+        font-weight: 700;
+        max-width: 16ch;
+        word-break: keep-all;
+      }
+      .lead p.desc {
+        margin: 22px 0 0;
+        color: #e2e8f0;
+        font-size: 1.08rem;
+        max-width: 36em;
+        word-break: keep-all;
+      }
+      .manifesto {
+        padding: 22px 0 88px;
+        color: #fff;
+      }
+      .manifesto-intro {
+        display: grid;
+        grid-template-columns: minmax(0, 1.3fr) minmax(220px, 0.7fr);
+        gap: 36px;
+        padding: 34px 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.34);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+      }
+      .manifesto h2 {
+        max-width: 14ch;
+        margin: 0;
+        font-size: clamp(1.8rem, 3.7vw, 3rem);
+        line-height: 1.25;
+        letter-spacing: -0.05em;
+        word-break: keep-all;
+      }
+      .manifesto-intro > p {
+        align-self: end;
+        margin: 0;
+        color: #dbeafe;
+        font-size: 1rem;
+        word-break: keep-all;
+      }
+      .profile-ledger {
+        display: grid;
+        grid-template-columns: 0.9fr 1.1fr;
+        margin-top: 22px;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        border-radius: 18px;
+        overflow: hidden;
+      }
+      .ledger-input,
+      .ledger-output {
+        padding: clamp(24px, 4vw, 42px);
+      }
+      .ledger-input {
+        background: rgba(15, 23, 42, 0.34);
+      }
+      .ledger-output {
+        background: rgba(255, 255, 255, 0.96);
+        color: var(--text-primary);
+      }
+      .ledger-label {
+        margin: 0 0 18px;
+        color: #cbd5e1;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+      }
+      .ledger-output .ledger-label {
+        color: var(--slate-500);
+      }
+      .ledger-input h3,
+      .ledger-output h3 {
+        margin: 0;
+        font-size: clamp(1.25rem, 2.2vw, 1.65rem);
+        letter-spacing: -0.035em;
+      }
+      .ledger-list {
+        display: grid;
+        gap: 0;
+        margin: 26px 0 0;
+        padding: 0;
+        list-style: none;
+      }
+      .ledger-list li {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 12px 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.18);
+        color: #e2e8f0;
+        font-size: 0.94rem;
+      }
+      .ledger-list li span {
+        color: #94a3b8;
+        font-size: 0.78rem;
+      }
+      .ledger-output .ledger-list li {
+        border-color: #e2e8f0;
+        color: var(--text-primary);
+      }
+      .ledger-output .ledger-list li span {
+        color: var(--slate-500);
+      }
+      .ledger-stamp {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        margin-top: 28px;
+        color: #0f766e;
+        font-size: 0.86rem;
+        font-weight: 700;
+      }
+      .ledger-stamp::before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--teal);
+        box-shadow: 0 0 0 5px rgba(45, 212, 191, 0.18);
+      }
+      .ctas {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 30px;
+      }
+      .btn-lg {
+        padding: 14px 24px;
+        font-size: 1rem;
+      }
+      .btn-primary {
+        background: #fff;
+        color: var(--slate-700);
+      }
+      .btn-ghost {
+        background: transparent;
+        color: #fff;
+        box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.5);
+      }
+      .steps {
+        padding: 40px 0 96px;
+        color: #fff;
+        border-top: 1px solid rgba(255, 255, 255, 0.28);
+      }
+      .steps h2 {
+        font-size: clamp(1.4rem, 3vw, 1.9rem);
+        letter-spacing: -0.03em;
+        margin: 0 0 28px;
+        max-width: 20ch;
+        line-height: 1.3;
+        word-break: keep-all;
+      }
+      .steps ol {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 28px;
+        counter-reset: s;
+      }
+      .steps li {
+        counter-increment: s;
+        padding-top: 16px;
+        border-top: 2px solid rgba(255, 255, 255, 0.8);
+      }
+      .steps li::before {
+        content: counter(s, decimal-leading-zero);
+        font-size: 0.85rem;
+        color: #dbeafe;
+        font-weight: 600;
+      }
+      .steps h3 {
+        margin: 6px 0 4px;
+        font-size: 1.1rem;
+      }
+      .steps p {
+        margin: 0;
+        color: #e2e8f0;
+        font-size: 0.95rem;
+      }
+      .product-reel {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 44px;
+      }
+      .product-shot {
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        border-radius: 18px;
+        background: rgba(15, 23, 42, 0.38);
+      }
+      .product-shot-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 13px 15px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+        color: #cbd5e1;
+        font-size: 0.74rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+      }
+      .product-shot-head span:last-child {
+        color: #94a3b8;
+        font-weight: 500;
+        letter-spacing: 0;
+      }
+      .product-skeleton {
+        position: relative;
+        min-height: 248px;
+        padding: 22px;
+        background: linear-gradient(
+          145deg,
+          rgba(255, 255, 255, 0.11),
+          rgba(255, 255, 255, 0.025)
+        );
+      }
+      .product-skeleton::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          110deg,
+          transparent 25%,
+          rgba(255, 255, 255, 0.09) 47%,
+          transparent 68%
+        );
+        transform: translateX(-100%);
+        animation: skeleton-shine 2.8s ease-in-out infinite;
+      }
+      @keyframes skeleton-shine {
+        to {
+          transform: translateX(100%);
+        }
+      }
+      .skeleton-kicker,
+      .skeleton-caption {
+        position: relative;
+        z-index: 1;
+        margin: 0;
+      }
+      .skeleton-kicker {
+        color: #94a3b8;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.09em;
+      }
+      .skeleton-caption {
+        max-width: 14ch;
+        margin-top: 10px;
+        color: #f8fafc;
+        font-size: 1.12rem;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        line-height: 1.35;
+        word-break: keep-all;
+      }
+      .skeleton-ui {
+        position: absolute;
+        right: 22px;
+        bottom: 22px;
+        left: 22px;
+        z-index: 1;
+        display: grid;
+        gap: 8px;
+      }
+      .skeleton-ui i {
+        display: block;
+        height: 10px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.18);
+      }
+      .skeleton-ui i:nth-child(2) {
+        width: 78%;
+      }
+      .skeleton-ui i:nth-child(3) {
+        width: 52%;
+      }
+      .skeleton-ui .skeleton-chip {
+        width: 86px;
+        height: 28px;
+        margin-top: 6px;
+        border: 1px solid rgba(94, 234, 212, 0.52);
+        border-radius: 8px;
+        background: rgba(45, 212, 191, 0.12);
+      }
+      .product-story { position: relative; height: 400svh; margin-top: 44px; }
+      .product-story-sticky { position: sticky; top: 0; height: 100svh; display: grid; grid-template-columns: minmax(220px, .68fr) minmax(0, 1.32fr); gap: clamp(28px, 7vw, 96px); align-items: center; }
+      .story-caption { align-self: center; }
+      .story-number { margin: 0 0 16px; color: var(--teal); font-size: .78rem; font-weight: 700; letter-spacing: .12em; }
+      .story-caption h3 { max-width: 12ch; margin: 0; font-size: clamp(2rem, 4.5vw, 4.4rem); line-height: 1.12; letter-spacing: -.06em; word-break: keep-all; }
+      .story-caption p:last-child { max-width: 24ch; margin: 20px 0 0; color: #dbeafe; }
+      .story-stage { position: relative; height: min(68svh, 620px); }
+      .story-screen { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; opacity: 0; transform: translateY(24px) scale(.82); transform-origin: center center; will-change: transform, opacity; }
+      .story-screen .product-shot { width: min(100%, 660px); box-shadow: 0 34px 90px rgba(0, 0, 0, .32); }
+      .story-screen .product-skeleton { min-height: min(52svh, 440px); }
+      @media (max-width: 760px) { .product-story { height: 360svh; } .product-story-sticky { grid-template-columns: 1fr; gap: 24px; align-content: center; } .story-caption h3 { font-size: clamp(1.8rem, 9vw, 3rem); } .story-stage { height: min(50svh, 390px); } .story-screen .product-skeleton { min-height: 300px; } }
+      @media (prefers-reduced-motion: reduce) { .product-story { height: auto; } .product-story-sticky { position: static; height: auto; display: block; } .story-stage { height: auto; margin-top: 28px; } .story-screen { position: static; display: block; margin-top: 14px; opacity: 1 !important; transform: none !important; } .story-screen .product-shot { width: 100%; } }
+      .why,
+      .demo {
+        padding: 88px 0;
+        color: #fff;
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+      }
+      .section-kicker {
+        margin: 0 0 12px;
+        color: #cbd5e1;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+      }
+      .why h2,
+      .demo h2 {
+        max-width: 18ch;
+        margin: 0;
+        font-size: clamp(1.8rem, 4vw, 2.8rem);
+        line-height: 1.28;
+        letter-spacing: -0.04em;
+        word-break: keep-all;
+      }
+      .comparison {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-top: 34px;
+      }
+      .comparison-card {
+        min-height: 272px;
+        padding: clamp(22px, 4vw, 34px);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+      }
+      .comparison-card.old {
+        background: #f1f5f9;
+        color: var(--muted);
+      }
+      .comparison-card.new {
+        background: var(--slate-700);
+        color: #fff;
+        border-color: var(--slate-700);
+      }
+      .comparison-card p {
+        margin: 0 0 12px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+      }
+      .comparison-card h3 {
+        margin: 0 0 24px;
+        font-size: clamp(1.2rem, 2.4vw, 1.5rem);
+        letter-spacing: -0.03em;
+      }
+      .comparison-card ul {
+        display: grid;
+        gap: 13px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+      .comparison-card li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.92rem;
+      }
+      .comparison-card li span {
+        display: grid;
+        width: 24px;
+        height: 24px;
+        flex: none;
+        place-items: center;
+        border-radius: 50%;
+        background: rgba(100, 116, 139, 0.14);
+        font-size: 0.72rem;
+        font-weight: 700;
+      }
+      .comparison-card.new li span {
+        background: rgba(255, 255, 255, 0.14);
+      }
+      .demo {
+        padding-bottom: 104px;
+      }
+      .demo-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 32px;
+        align-items: end;
+      }
+      .demo-head > p {
+        max-width: 31ch;
+        margin: 0;
+        color: #dbeafe;
+      }
+      .demo-options {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin: 34px 0 18px;
+      }
+      .demo-option {
+        position: relative;
+        padding: 24px;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: var(--surface);
+        color: var(--ink);
+        text-align: left;
+        cursor: pointer;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s,
+          transform 0.2s;
+      }
+      .demo-option:hover {
+        transform: translateY(-2px);
+      }
+      .demo-option[aria-checked="true"] {
+        border-color: var(--teal);
+        box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.18);
+      }
+      .demo-option .badge {
+        display: inline-block;
+        margin-bottom: 18px;
+        padding: 4px 8px;
+        border-radius: 999px;
+        background: #ccfbf1;
+        color: #0f766e;
+        font-size: 0.74rem;
+        font-weight: 700;
+      }
+      .demo-option .badge.full {
+        background: #dbeafe;
+        color: #1d4ed8;
+      }
+      .demo-option strong,
+      .demo-option small,
+      .demo-option em {
+        display: block;
+      }
+      .demo-option strong {
+        font-size: 1.2rem;
+        letter-spacing: -0.03em;
+      }
+      .demo-option small {
+        margin-top: 6px;
+        color: var(--muted);
+      }
+      .demo-option em {
+        margin-top: 18px;
+        color: var(--muted);
+        font-size: 0.9rem;
+        font-style: normal;
+        line-height: 1.55;
+      }
+      .reservation {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 18px 28px;
+        align-items: center;
+        padding: 24px;
+        border-radius: 18px;
+        background: var(--slate-700);
+        color: #fff;
+      }
+      .reservation-copy p {
+        margin: 0 0 4px;
+        color: #cbd5e1;
+        font-size: 0.8rem;
+      }
+      .reservation-copy output {
+        font-weight: 700;
+        font-size: 1.05rem;
+      }
+      .reservation form {
+        display: grid;
+        grid-template-columns: 130px 200px auto;
+        gap: 10px;
+        align-items: center;
+      }
+      .reservation input {
+        width: 100%;
+        min-height: 44px;
+        border: 1px solid transparent;
+        border-radius: 9px;
+        padding: 0 12px;
+        font: inherit;
+        color: var(--text-primary);
+      }
+      .reservation input:focus {
+        outline: 3px solid rgba(94, 234, 212, 0.55);
+        outline-offset: 2px;
+      }
+      .reservation button {
+        min-height: 44px;
+        padding: 0 16px;
+        border: 0;
+        border-radius: 9px;
+        background: var(--teal);
+        color: #042f2e;
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .reservation-note {
+        grid-column: 1 / -1;
+        margin: 0;
+        color: #cbd5e1;
+        font-size: 0.76rem;
+      }
+      .reservation-message {
+        display: none;
+        grid-column: 1 / -1;
+        margin: 0;
+        color: #99f6e4;
+        font-size: 0.86rem;
+      }
+      .reservation-message.show {
+        display: block;
+      }
+      @media (max-width: 760px) {
+        .comparison,
+        .demo-options,
+        .reservation,
+        .reservation form,
+        .product-reel {
+          grid-template-columns: 1fr;
+        }
+        .demo-head {
+          display: block;
+        }
+        .demo-head > p {
+          margin-top: 18px;
+        }
+      }
+      @media (max-width: 760px) {
+        .manifesto-intro,
+        .profile-ledger {
+          grid-template-columns: 1fr;
+          gap: 22px;
+        }
+      }
+      footer {
+        padding: 28px 0 48px;
+        color: #cbd5e1;
+        font-size: 0.85rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .scene,
+        .scene * {
+          animation: none !important;
+          transition: none !important;
+        }
+        .s4 .stamp,
+        .s4 .tags span,
+        .s4 .profile {
+          opacity: 1;
+        }
+        .s4 .radar .shape {
+          transform: none;
+        }
+        .cue i {
+          animation: none;
+        }
+      }
+    </style>
   </head>
   <body>
-    <a class="skip-link" href="#main">본문으로 바로가기</a>
-
-    <header class="site-header">
-      <div class="container header-inner">
-        <a class="brand" href="#top" aria-label="weiver 홈">
-          <img src="./assets/weiver-wordmark.png" alt="weiver" />
-        </a>
-        <a class="button button-small" href="#reserve">사전예약</a>
-      </div>
+    <header class="site-head" id="head">
+      <a class="wordmark" href="#top" aria-label="weiver 홈"
+        ><span class="logo" role="img" aria-label="weiver"></span
+      ></a>
+      <a class="btn btn-sm" href="#reserve">사전예약</a>
     </header>
 
-    <main id="main">
-      <section class="hero" id="top">
-        <div class="container hero-grid">
-          <div class="hero-copy">
-            <p class="eyebrow">기업이 먼저 찾는 역매칭 구직 서비스</p>
-            <h1>한 번 준비하고,<br /><span>여러 기업에게 먼저</span><br />제안받으세요.</h1>
-            <p class="hero-description">
-              기업마다 반복하던 서류와 면접 준비는 이제 한 번으로.<br class="desktop-only" />
-              나의 역량을 등록하면, 기업이 먼저 나를 찾습니다.
-            </p>
-            <div class="hero-actions">
-              <a class="button" href="#reserve">데모 사전예약하기</a>
-              <a class="text-link" href="#how-it-works">서비스 알아보기 <span aria-hidden="true">↓</span></a>
+    <main id="top">
+      <div class="stage" id="stage">
+        <section class="hero" aria-label="서비스 소개 영상">
+          <div class="film" id="film">
+            <canvas class="terrain" id="terrain" aria-hidden="true"></canvas>
+            <div class="scrim" aria-hidden="true"></div>
+            <!-- 1. 반복 -->
+            <div class="scene s1">
+              <div
+                class="win"
+                style="--x: -120px; --y: -70px; --r: -4deg; --d: 0.1s"
+              >
+                <b>기업 A 자기소개서</b><span></span><span></span><span></span>
+              </div>
+              <div
+                class="win"
+                style="--x: 110px; --y: -40px; --r: 3deg; --d: 0.6s"
+              >
+                <b>기업 B 인적성검사</b><span></span><span></span><span></span>
+              </div>
+              <div
+                class="win"
+                style="--x: -80px; --y: 30px; --r: 2deg; --d: 1.05s"
+              >
+                <b>기업 C 포트폴리오 제출</b><span></span><span></span
+                ><span></span>
+              </div>
+              <div
+                class="win"
+                style="--x: 130px; --y: 60px; --r: -3deg; --d: 1.4s"
+              >
+                <b>기업 D 1차 면접</b><span></span><span></span><span></span>
+              </div>
+              <div class="win" style="--x: 0px; --y: 0px; --r: 0deg; --d: 1.7s">
+                <b>기업 E 자기소개서</b><span></span><span></span><span></span>
+              </div>
+              <p class="cap">지원할 때마다, 처음부터</p>
             </div>
-            <p class="hero-note">데모에서 AI 면접 연습과 역량 검증 과정을 먼저 경험할 수 있어요.</p>
-          </div>
 
-          <div class="hero-visual" aria-label="한 번의 역량 등록으로 여러 기업과 연결되는 구조">
-            <div class="profile-card">
-              <div class="profile-head">
-                <div class="avatar">나</div>
-                <div>
-                  <strong>역량 프로필</strong>
-                  <span>AI 면접 완료</span>
+            <!-- 2. 한 번으로 -->
+            <div class="scene s2">
+              <div
+                class="win"
+                style="--x: -120px; --y: -70px; --r: -4deg; --d: 0s"
+              >
+                <b>기업 A 자기소개서</b><span></span><span></span><span></span>
+              </div>
+              <div
+                class="win"
+                style="--x: 110px; --y: -40px; --r: 3deg; --d: 0.08s"
+              >
+                <b>기업 B 인적성검사</b><span></span><span></span><span></span>
+              </div>
+              <div
+                class="win"
+                style="--x: -80px; --y: 30px; --r: 2deg; --d: 0.16s"
+              >
+                <b>기업 C 포트폴리오 제출</b><span></span><span></span
+                ><span></span>
+              </div>
+              <div
+                class="win"
+                style="--x: 130px; --y: 60px; --r: -3deg; --d: 0.24s"
+              >
+                <b>기업 D 1차 면접</b><span></span><span></span><span></span>
+              </div>
+              <div
+                class="win"
+                style="--x: 0px; --y: 0px; --r: 0deg; --d: 0.32s"
+              >
+                <b>기업 E 자기소개서</b><span></span><span></span><span></span>
+              </div>
+              <div class="onedoc card center">
+                <b>나의 지원 서류</b>
+                <ul>
+                  <li>이력서</li>
+                  <li>자기소개서</li>
+                  <li>포트폴리오</li>
+                </ul>
+              </div>
+              <p class="cap">이제, 한 번이면 충분해요</p>
+            </div>
+
+            <!-- 3. 서류 등록 + AI 면접 -->
+            <div class="scene s3">
+              <div class="frame center">
+                <div class="bar">
+                  <img src="assets/favicon.png" alt="" />weiver AI 면접
                 </div>
-                <span class="complete-badge">완성</span>
+                <div class="shot">
+                  <img
+                    src="assets/interview.jpg"
+                    alt="weiver AI 면접 진행 화면"
+                  />
+                </div>
               </div>
-              <div class="profile-lines" aria-hidden="true">
-                <span></span><span></span><span></span>
+              <div class="uploaded card">
+                <b>서류 등록 완료</b>
+                <div><span>이력서</span><em>완료</em></div>
+                <div><span>자기소개서</span><em>완료</em></div>
+                <div><span>포트폴리오</span><em>완료</em></div>
               </div>
-              <div class="skill-tags">
-                <span>문제 해결</span><span>협업</span><span>직무 역량</span>
+              <div class="analyzing"><i></i>음성과 표정을 분석하고 있어요</div>
+              <p class="cap">서류 등록과 AI 면접, 한 번으로</p>
+            </div>
+
+            <!-- 4. 역량 프로필 -->
+            <div class="scene s4">
+              <div class="profile card center">
+                <svg
+                  class="radar"
+                  viewBox="0 0 200 200"
+                  id="radar"
+                  aria-hidden="true"
+                ></svg>
+                <div>
+                  <div class="who">
+                    <img src="assets/avatar.jpg" alt="" />
+                    <div><b>김위버</b><small>신입 · 서비스 기획</small></div>
+                    <span class="stamp">AI 면접 완료</span>
+                  </div>
+                  <div class="scores">
+                    <div>
+                      <small>스킬핏 점수</small><strong id="score">0</strong>
+                    </div>
+                    <div>
+                      <small>컬처핏 스타일</small><span>추진형 실행가</span>
+                    </div>
+                  </div>
+                  <div class="tags">
+                    <span style="--k: 0">논리성 96%</span
+                    ><span style="--k: 1">성장가능성 92%</span
+                    ><span style="--k: 2">데이터분석능력</span
+                    ><span style="--k: 3">User Experience</span>
+                  </div>
+                </div>
+              </div>
+              <p class="cap">나의 역량 프로필 완성</p>
+            </div>
+
+            <!-- 4b. 개인 대시보드: 서류 제출과 AI 채용 프로세스 진행 상황 -->
+            <div class="scene s4b">
+              <div class="frame center">
+                <div class="bar">
+                  <img src="assets/favicon.png" alt="" />weiver 개인 대시보드
+                </div>
+                <div class="shot dash-shot" id="dashShot">
+                  <div class="cam" id="dashCam">
+                    <div
+                      class="dash"
+                      id="dash"
+                      role="img"
+                      aria-label="개인 대시보드: 이력서, 자기소개서, 포트폴리오 작성 완료. AI 서류분석과 AI 면접 완료, 기업 매칭 진행 중"
+                    >
+                      <div class="d-side" aria-hidden="true">
+                        <img src="assets/app-icon.png" alt="" />
+                        <span class="d-nav"
+                          ><svg viewBox="0 0 24 24">
+                            <path
+                              d="M3 5a2 2 0 012-2h6v8H3zM13 3h6a2 2 0 012 2v4h-8zM13 11h8v8a2 2 0 01-2 2h-6zM3 13h8v8H5a2 2 0 01-2-2z"
+                              fill="#fff"
+                            /></svg
+                        ></span>
+                        <span class="grow"></span>
+                        <svg viewBox="0 0 24 24">
+                          <path
+                            d="M12 2a10 10 0 110 20 10 10 0 010-20zm0 14.2a1.3 1.3 0 100 2.6 1.3 1.3 0 000-2.6zM12 6a3.6 3.6 0 00-3.6 3.4h2.2A1.4 1.4 0 0112 8.2c.8 0 1.4.6 1.4 1.3 0 .6-.3.9-1 1.4-1 .6-1.6 1.3-1.6 2.6v.4h2.1v-.3c0-.6.3-.9 1-1.4 1-.6 1.7-1.3 1.7-2.8C15.6 7.4 14.1 6 12 6z"
+                          />
+                        </svg>
+                        <svg viewBox="0 0 24 24">
+                          <path
+                            d="M13.7 2l.5 2.6 1.6.9 2.5-.9 1.7 2.9-2 1.7v1.8l2 1.7-1.7 2.9-2.5-.9-1.6.9-.5 2.6h-3.4l-.5-2.6-1.6-.9-2.5.9-1.7-2.9 2-1.7V9.2l-2-1.7L5.7 4.6l2.5.9 1.6-.9.5-2.6zM12 8.5a3.5 3.5 0 100 7 3.5 3.5 0 000-7z"
+                          />
+                        </svg>
+                        <span class="d-me"></span>
+                      </div>
+                      <div class="d-main">
+                        <div class="d-card d-prof">
+                          <img class="d-ava" src="assets/avatar.jpg" alt="" />
+                          <div class="d-id">
+                            <b>김위버님</b>
+                            <span
+                              ><svg viewBox="0 0 16 16">
+                                <path
+                                  d="M1 3h14v10H1zm1.5 1.4v.3L8 8.6l5.5-3.9v-.3z"
+                                /></svg
+                              >kimweiver@gmail.com</span
+                            >
+                            <span
+                              ><svg viewBox="0 0 16 16">
+                                <path
+                                  d="M4.2 1.5l2 2.6-1.1 1.6a8 8 0 005.2 5.2l1.6-1.1 2.6 2-1 2.2C7 14 2 9 1.9 2.5z"
+                                /></svg
+                              >010-0000-0000</span
+                            >
+                          </div>
+                          <div class="d-comp">
+                            <h4>프로필 완성도</h4>
+                            <div class="d-chips">
+                              <div class="chip" style="--d: 0.45s">
+                                <span>이력서</span
+                                ><span class="sw"
+                                  ><span>작성중</span
+                                  ><span>작성완료</span></span
+                                ><span class="ico" aria-hidden="true"
+                                  ><i></i
+                                ></span>
+                              </div>
+                              <div class="chip" style="--d: 0.6s">
+                                <span>자기소개서</span
+                                ><span class="sw"
+                                  ><span>작성중</span
+                                  ><span>작성완료</span></span
+                                ><span class="ico" aria-hidden="true"
+                                  ><i></i
+                                ></span>
+                              </div>
+                              <div class="chip" style="--d: 0.75s">
+                                <span>포트폴리오</span
+                                ><span class="sw"
+                                  ><span>작성중</span
+                                  ><span>작성완료</span></span
+                                ><span class="ico" aria-hidden="true"
+                                  ><i></i
+                                ></span>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="d-acts">
+                            <span class="d-btn">프로필 수정</span
+                            ><span class="d-btn off">제출 완료</span>
+                          </div>
+                        </div>
+                        <div class="d-row">
+                          <div class="d-card d-proc">
+                            <h4>AI 채용 프로세스</h4>
+                            <div class="d-steps">
+                              <div class="step" style="--d: 1.05s">
+                                <span class="ico" aria-hidden="true"
+                                  ><i></i
+                                ></span>
+                                <div>
+                                  <b>AI 서류분석</b
+                                  ><span class="sw"
+                                    ><span>대기</span
+                                    ><span>분석 완료</span></span
+                                  >
+                                </div>
+                              </div>
+                              <div class="step" style="--d: 1.55s">
+                                <span class="ico" aria-hidden="true"
+                                  ><i></i
+                                ></span>
+                                <div>
+                                  <b>AI 면접</b
+                                  ><span class="sw"
+                                    ><span>대기</span
+                                    ><span>진행 완료</span></span
+                                  >
+                                </div>
+                              </div>
+                              <div
+                                class="step match"
+                                id="dashMatch"
+                                style="--d: 2.1s"
+                              >
+                                <span class="ico run" aria-hidden="true"
+                                  ><i
+                                    ><u style="--k: 0"></u><u style="--k: 1"></u
+                                    ><u style="--k: 2"></u></i
+                                ></span>
+                                <div>
+                                  <b>기업 매칭</b
+                                  ><span class="sw run"
+                                    ><span>대기</span><span>진행중</span></span
+                                  >
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="d-cta">
+                            <b>AI 면접을 진행할 준비가 되셨나요?</b>
+                            <p>
+                              면접은 1차 기술면접, 2차 인적성면접으로 진행되며
+                              약 1시간 정도 소요됩니다.
+                            </p>
+                            <span class="d-go sw" style="--d: 1.55s"
+                              ><span>AI 면접 시작하기</span
+                              ><span>AI 면접 진행 완료</span></span
+                            >
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="matching"><i></i>기업 매칭을 시작했어요</div>
+              <p class="cap">서류부터 매칭까지, 진행 상황을 한눈에</p>
+            </div>
+
+            <!-- 5a. 기업이 프로필을 확인하고 컨택 -->
+            <div class="scene s5a">
+              <div class="frame center">
+                <div class="bar">
+                  <img src="assets/favicon.png" alt="" />weiver 기업용 지원자
+                  리포트
+                </div>
+                <div class="shot">
+                  <img
+                    src="assets/report.jpg"
+                    alt="기업이 보는 지원자 상세 리포트 화면"
+                  />
+                  <span class="hit"></span>
+                  <svg class="cursor" viewBox="0 0 24 24">
+                    <path
+                      d="M4 2l16 10-7 1.6L9.6 21z"
+                      fill="#fff"
+                      stroke="#0F172A"
+                      stroke-width="1.5"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </div>
+              </div>
+              <div class="sent">컨택 제안을 보냈어요</div>
+              <p class="cap">기업이 내 역량을 먼저 확인하고</p>
+            </div>
+
+            <!-- 5b. 지원자에게 도착한 제안 -->
+            <div class="scene s5b">
+              <div class="mini card center">
+                <img src="assets/avatar.jpg" alt="" />
+                <div><b>김위버</b><small>역량 프로필</small></div>
+              </div>
+              <div class="note n1" style="--x: -240px; --y: -110px; --d: 0.2s">
+                <span class="co">A</span
+                ><span><b>기업 A</b>에서 면접을 제안했어요</span>
+              </div>
+              <div class="note n2" style="--x: 250px; --y: -40px; --d: 0.8s">
+                <span class="co">B</span
+                ><span><b>기업 B</b>에서 관심을 보냈어요</span>
+              </div>
+              <div class="note n3" style="--x: -210px; --y: 100px; --d: 1.4s">
+                <span class="co">C</span
+                ><span><b>기업 C</b>에서 프로필을 확인했어요</span>
+              </div>
+              <p class="cap">이제 기업이 먼저 찾아옵니다</p>
+            </div>
+
+            <!-- 6. 로고 -->
+            <div class="scene s6">
+              <div class="center">
+                <img class="icon" src="assets/app-icon.png" alt="" />
+                <span class="logo big" role="img" aria-label="weiver"></span>
+                <p>한 번의 준비로, 더 많은 가능성을.</p>
               </div>
             </div>
-            <div class="contact-card contact-a"><span class="company-icon">A</span><span><strong>기업 A</strong>에서<br />관심을 보냈어요</span></div>
-            <div class="contact-card contact-b"><span class="company-icon">B</span><span><strong>기업 B</strong>에서<br />면접을 제안했어요</span></div>
-            <div class="contact-card contact-c"><span class="company-icon">C</span><span><strong>기업 C</strong>에서<br />프로필을 확인했어요</span></div>
-          </div>
-        </div>
-      </section>
 
-      <section class="problem-section" aria-labelledby="problem-title">
-        <div class="container">
-          <p class="eyebrow">WHY weiver</p>
-          <h2 id="problem-title">기업마다 반복하던 지원 과정,<br />이제 한 번이면 충분해요.</h2>
-          <div class="comparison">
-            <article class="comparison-card old-way">
-              <p class="card-label">기존 구직</p>
-              <h3>지원할 때마다 처음부터</h3>
-              <ul>
-                <li><span>1</span>기업별 지원 서류 작성</li>
-                <li><span>2</span>기업별 인적성·면접 반복</li>
-                <li><span>3</span>구직자가 매번 먼저 지원</li>
-              </ul>
-            </article>
-            <div class="change-arrow" aria-hidden="true">→</div>
-            <article class="comparison-card new-way">
-              <div class="card-heading">
-                <p class="card-label">weiver</p>
-                <span class="once-badge">한 번만</span>
+            <div class="film-ui">
+              <p class="intro">기업이 먼저 찾는 역매칭 구직 서비스</p>
+              <button
+                class="pause"
+                id="pause"
+                aria-label="영상 일시정지"
+                aria-pressed="false"
+              >
+                <svg viewBox="0 0 14 14" id="icon">
+                  <rect x="2" y="1" width="3.5" height="12" rx="1" />
+                  <rect x="8.5" y="1" width="3.5" height="12" rx="1" />
+                </svg>
+              </button>
+            </div>
+            <div class="cue" aria-hidden="true">스크롤해서 알아보기<i></i></div>
+          </div>
+        </section>
+      </div>
+
+      <div class="content">
+        <div class="wrap">
+          <section class="lead">
+            <p class="tagline">
+              이력서를 더 많이 보내는 대신, 나를 더 잘 보여주는 방법
+            </p>
+            <h1>나를 계속 복사하지 않아도 되는 구직.</h1>
+            <p class="desc">
+              이력서, 포트폴리오, 그리고 일하는 방식까지. 한 번의 준비를 하나의
+              역량 프로필로 만들면, 맞는 기업이 먼저 당신을 발견합니다.
+            </p>
+            <div class="ctas">
+              <a class="btn btn-lg btn-primary" href="#reserve"
+                >내 프로필로 시작하기</a
+              >
+              <a class="btn btn-lg btn-ghost" href="#profile"
+                >프로필이 되는 과정</a
+              >
+            </div>
+          </section>
+          <section
+            class="manifesto"
+            id="profile"
+            aria-labelledby="profile-title"
+          >
+            <div class="manifesto-intro">
+              <h2 id="profile-title">프로필은 이력서가 아닙니다.</h2>
+              <p>
+                무엇을 했는지에 더해, 어떻게 일하고 어떤 가능성을 가진
+                사람인지까지. weiver는 흩어진 경험을 하나의 발견 가능한 이야기로
+                엮습니다.
+              </p>
+            </div>
+            <div class="profile-ledger">
+              <article class="ledger-input">
+                <p class="ledger-label">YOU BRING</p>
+                <h3>당신이 남긴 경험</h3>
+                <ul class="ledger-list">
+                  <li>이력서와 프로젝트 <span>무엇을 했는지</span></li>
+                  <li>포트폴리오와 기록 <span>어떻게 해냈는지</span></li>
+                  <li>인터뷰와 대화 <span>어떻게 일하는지</span></li>
+                </ul>
+              </article>
+              <article class="ledger-output">
+                <p class="ledger-label">WEIVER PROFILE</p>
+                <h3>기업이 먼저 만나는 당신</h3>
+                <ul class="ledger-list">
+                  <li>직무 역량 <span>경험의 밀도</span></li>
+                  <li>일하는 방식 <span>협업의 결</span></li>
+                  <li>성장 가능성 <span>다음 기회의 방향</span></li>
+                </ul>
+                <p class="ledger-stamp">한 번의 준비, 여러 번의 발견</p>
+              </article>
+            </div>
+          </section>
+          <section class="steps" id="how">
+            <h2>한 번 만든 프로필이 새로운 기회로 이어집니다.</h2>
+            <ol>
+              <li>
+                <h3>서류 등록</h3>
+                <p>나의 경험과 역량을 한 번에 등록해요.</p>
+              </li>
+              <li>
+                <h3>AI 면접 진행</h3>
+                <p>인적성과 직무 역량을 한 번에 검증해요.</p>
+              </li>
+              <li>
+                <h3>역량 프로필 완성</h3>
+                <p>서류와 면접 결과가 하나의 프로필이 돼요.</p>
+              </li>
+              <li>
+                <h3>기업이 먼저 컨택</h3>
+                <p>기업이 역량을 확인하고 먼저 기회를 제안해요.</p>
+              </li>
+            </ol>
+            <div class="product-story" id="product-story" aria-label="weiver 제품 화면 스크롤 미리보기">
+              <div class="product-story-sticky">
+                <div class="story-caption">
+                  <p class="story-number" id="story-number">01 / 04</p>
+                  <h3 id="story-title">흩어진 경험을 한 번에 정리해요.</h3>
+                  <p id="story-description">이력서와 프로젝트, 포트폴리오를 하나의 프로필에 담습니다.</p>
+                </div>
+                <div class="story-stage">
+              <article
+                class="story-screen"
+                data-resource="01-profile-registration.webp"
+                data-title="흩어진 경험을 한 번에 정리해요."
+                data-description="이력서와 프로젝트, 포트폴리오를 하나의 프로필에 담습니다."
+              >
+                <div class="product-shot"><div class="product-shot-head"><span>01 · PROFILE</span><span>화면 리소스 대기</span></div><div class="product-skeleton">
+                  <p class="skeleton-kicker">PROFILE REGISTRATION</p>
+                  <p class="skeleton-caption">
+                    흩어진 경험을 한 번에 정리하는 화면
+                  </p>
+                  <div class="skeleton-ui">
+                    <i></i><i></i><i></i><i class="skeleton-chip"></i>
+                  </div>
+                </div></div>
+              </article>
+              <article
+                class="story-screen"
+                data-resource="02-ai-interview.webp"
+                data-title="내 방식으로 답하고, 역량을 보여줘요."
+                data-description="한 번의 인터뷰로 당신의 일하는 방식을 더 깊게 전달합니다."
+              >
+                <div class="product-shot"><div class="product-shot-head"><span>02 · INTERVIEW</span><span>화면 리소스 대기</span></div><div class="product-skeleton">
+                  <p class="skeleton-kicker">INTERVIEW PRACTICE</p>
+                  <p class="skeleton-caption">
+                    내 방식으로 답하고 역량을 보여주는 화면
+                  </p>
+                  <div class="skeleton-ui">
+                    <i></i><i></i><i></i><i class="skeleton-chip"></i>
+                  </div>
+                </div></div>
+              </article>
+              <article
+                class="story-screen"
+                data-resource="03-capability-profile.webp"
+                data-title="경험의 밀도가 하나의 프로필이 돼요."
+                data-description="기업은 이력서 너머의 직무 역량과 협업 방식을 함께 만납니다."
+              >
+                <div class="product-shot"><div class="product-shot-head"><span>03 · PROFILE</span><span>화면 리소스 대기</span></div><div class="product-skeleton">
+                  <p class="skeleton-kicker">CAPABILITY PROFILE</p>
+                  <p class="skeleton-caption">
+                    경험의 밀도가 하나의 프로필이 되는 화면
+                  </p>
+                  <div class="skeleton-ui">
+                    <i></i><i></i><i></i><i class="skeleton-chip"></i>
+                  </div>
+                </div></div>
+              </article>
+              <article
+                class="story-screen"
+                data-resource="04-company-contact.webp"
+                data-title="지원 전에, 기업의 제안을 받아요."
+                data-description="준비한 프로필이 맞는 기회와 연결되는 순간입니다."
+              >
+                <div class="product-shot"><div class="product-shot-head"><span>04 · CONTACT</span><span>화면 리소스 대기</span></div><div class="product-skeleton">
+                  <p class="skeleton-kicker">COMPANY CONTACT</p>
+                  <p class="skeleton-caption">
+                    지원 전에 기업의 제안을 받는 순간
+                  </p>
+                  <div class="skeleton-ui">
+                    <i></i><i></i><i></i><i class="skeleton-chip"></i>
+                  </div>
+                </div></div>
+              </article>
+                </div>
               </div>
-              <h3>한 번 준비하고, 기회는 여러 번</h3>
-              <ul>
-                <li><span>1</span>이력서·자기소개서·포트폴리오를 한 번만 등록</li>
-                <li><span>2</span>AI 면접 한 번으로 인적성 및 역량 검증</li>
-                <li><span>3</span>기업이 먼저 컨택</li>
-              </ul>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="process-section" id="how-it-works" aria-labelledby="process-title">
-        <div class="container">
-          <p class="eyebrow">HOW IT WORKS</p>
-          <h2 id="process-title">한 번의 과정이<br />새로운 기회로 이어집니다.</h2>
-          <ol class="process-list">
-            <li>
-              <span class="step-number">01</span>
-              <div class="step-icon" aria-hidden="true">↗</div>
-              <h3>이력서 등<br />서류 등록</h3>
-              <p>나의 경험과 역량을<br />한 번에 등록해요.</p>
-            </li>
-            <li>
-              <span class="step-number">02</span>
-              <div class="step-icon" aria-hidden="true">◉</div>
-              <h3>AI 면접<br />진행</h3>
-              <p>인적성과 직무 역량을<br />한 번에 검증해요.</p>
-            </li>
-            <li>
-              <span class="step-number">03</span>
-              <div class="step-icon" aria-hidden="true">✓</div>
-              <h3>역량 프로필<br />완성</h3>
-              <p>서류와 면접 결과가<br />하나의 프로필이 돼요.</p>
-            </li>
-            <li>
-              <span class="step-number">04</span>
-              <div class="step-icon" aria-hidden="true">✦</div>
-              <h3>기업이 먼저<br />컨택</h3>
-              <p>기업이 역량을 확인하고<br />먼저 기회를 제안해요.</p>
-            </li>
-          </ol>
-        </div>
-      </section>
-
-      <section class="demo-section" id="reserve" aria-labelledby="demo-title">
-        <div class="container">
-          <div class="section-heading">
-            <div>
-              <p class="eyebrow">DEMO TESTER</p>
-              <h2 id="demo-title">나에게 맞는 방식으로<br />weiver를 먼저 경험해 보세요.</h2>
             </div>
-            <p>두 가지 방식 중 하나를 선택해 AI 면접을 연습하고,<br class="desktop-only" /> weiver의 역량 검증 과정을 경험할 수 있어요.</p>
-          </div>
-
-          <div class="demo-options" role="radiogroup" aria-label="데모 참여 방식">
-            <button class="demo-card is-selected" type="button" role="radio" aria-checked="true" data-option="간편 AI 면접 체험">
-              <span class="recommend-badge">부담 없이 시작</span>
-              <span class="choice-mark" aria-hidden="true">✓</span>
-              <span class="option-kicker">OPTION A</span>
-              <strong>간편 AI 면접 체험</strong>
-              <span class="option-docs">이력서 + 간단 설문</span>
-              <span class="option-description">자기소개서와 포트폴리오 없이<br />AI 면접을 연습해 보세요.</span>
-              <span class="option-action">이 방식 선택하기 <span aria-hidden="true">→</span></span>
-            </button>
-
-            <button class="demo-card" type="button" role="radio" aria-checked="false" data-option="역매칭 준비 체험">
-              <span class="recommend-badge muted">전체 과정 경험</span>
-              <span class="choice-mark" aria-hidden="true">✓</span>
-              <span class="option-kicker">OPTION B</span>
-              <strong>역매칭 준비 체험</strong>
-              <span class="option-docs">이력서 + 자기소개서 + 포트폴리오</span>
-              <span class="option-description">역량 프로필을 완성하고<br />정식 출시 후 기업 컨택까지 준비해요.</span>
-              <span class="option-action">이 방식 선택하기 <span aria-hidden="true">→</span></span>
-            </button>
-          </div>
-
-          <div class="reservation-panel">
-            <div>
-              <p class="panel-label">선택한 체험</p>
-              <strong id="selected-option">간편 AI 면접 체험</strong>
+          </section>
+          <section class="why" aria-labelledby="why-title">
+            <p class="section-kicker">WHY WEIVER</p>
+            <h2 id="why-title">
+              기업마다 반복하던 지원 과정, 이제 한 번이면 충분해요.
+            </h2>
+            <div class="comparison">
+              <article class="comparison-card old">
+                <p>기존 구직</p>
+                <h3>지원할 때마다 처음부터</h3>
+                <ul>
+                  <li><span>1</span>기업별 지원 서류 작성</li>
+                  <li><span>2</span>기업별 인적성·면접 반복</li>
+                  <li><span>3</span>구직자가 매번 먼저 지원</li>
+                </ul>
+              </article>
+              <article class="comparison-card new">
+                <p>WEIVER · 한 번만</p>
+                <h3>한 번 준비하고, 기회는 여러 번</h3>
+                <ul>
+                  <li><span>1</span>서류와 포트폴리오를 한 번만 등록</li>
+                  <li><span>2</span>AI 면접 한 번으로 역량 검증</li>
+                  <li><span>3</span>기업이 먼저 컨택</li>
+                </ul>
+              </article>
             </div>
-            <button class="button button-light" id="open-reservation" type="button">데모 버전 사전예약하기</button>
-          </div>
+          </section>
+          <section class="demo" id="reserve" aria-labelledby="demo-title">
+            <div class="demo-head">
+              <div>
+                <p class="section-kicker">DEMO TESTER</p>
+                <h2 id="demo-title">
+                  나에게 맞는 방식으로 weiver를 먼저 경험해 보세요.
+                </h2>
+              </div>
+              <p>
+                두 가지 방식 중 하나를 선택해 AI 면접과 역량 검증 과정을 먼저
+                경험할 수 있어요.
+              </p>
+            </div>
+            <div
+              class="demo-options"
+              role="radiogroup"
+              aria-label="데모 참여 방식"
+            >
+              <button
+                class="demo-option"
+                type="button"
+                role="radio"
+                aria-checked="true"
+                data-option="간편 AI 면접 체험"
+              >
+                <span class="badge">부담 없이 시작</span>
+                <strong>간편 AI 면접 체험</strong>
+                <small>이력서 + 간단 설문</small>
+                <em>자기소개서와 포트폴리오 없이 AI 면접을 연습해 보세요.</em>
+              </button>
+              <button
+                class="demo-option"
+                type="button"
+                role="radio"
+                aria-checked="false"
+                data-option="역매칭 준비 체험"
+              >
+                <span class="badge full">전체 과정 경험</span>
+                <strong>역매칭 준비 체험</strong>
+                <small>이력서 + 자기소개서 + 포트폴리오</small>
+                <em
+                  >역량 프로필을 완성하고 정식 출시 후 기업 컨택까지
+                  준비해요.</em
+                >
+              </button>
+            </div>
+            <div class="reservation">
+              <div class="reservation-copy">
+                <p>선택한 체험</p>
+                <output id="selected-option">간편 AI 면접 체험</output>
+              </div>
+              <form id="reservation-form">
+                <input
+                  name="name"
+                  type="text"
+                  autocomplete="name"
+                  placeholder="이름"
+                  required
+                  aria-label="이름"
+                />
+                <input
+                  name="email"
+                  type="email"
+                  autocomplete="email"
+                  placeholder="이메일"
+                  required
+                  aria-label="이메일"
+                />
+                <button type="submit">사전예약하기</button>
+              </form>
+              <p class="reservation-note">
+                현재 입력 정보는 저장되지 않습니다. 개인정보 수집·이용 동의와
+                저장 API를 연결한 뒤 정식으로 접수합니다.
+              </p>
+              <p
+                class="reservation-message"
+                id="reservation-message"
+                role="status"
+              ></p>
+            </div>
+          </section>
+          <footer>
+            <span
+              class="logo"
+              role="img"
+              aria-label="weiver"
+              style="
+                height: 18px;
+                color: #fff;
+                display: block;
+                margin-bottom: 10px;
+              "
+            ></span
+            >한 번의 준비로, 더 많은 가능성을.
+          </footer>
         </div>
-      </section>
+      </div>
     </main>
 
-    <footer class="site-footer">
-      <div class="container footer-inner">
-        <img src="./assets/weiver-wordmark.png" alt="weiver" />
-        <p>한 번의 준비로, 더 많은 가능성을.</p>
-        <div class="footer-links"><a href="#top">이용약관</a><a href="#top">개인정보처리방침</a><a href="#top">문의</a></div>
-      </div>
-    </footer>
+    <script>
+      (function () {
+        var reduce = window.matchMedia(
+          "(prefers-reduced-motion: reduce)",
+        ).matches;
+        var film = document.getElementById("film"),
+          stage = document.getElementById("stage"),
+          head = document.getElementById("head");
+        var scenes = Array.prototype.slice.call(
+          document.querySelectorAll(".scene"),
+        );
+        var durations = [3000, 2400, 4300, 3900, 4700, 3500, 3500, 2500];
+        var PROFILE = 3;
 
-    <dialog class="reservation-dialog" id="reservation-dialog" aria-labelledby="dialog-title">
-      <form id="reservation-form" method="dialog">
-        <button class="dialog-close" type="button" aria-label="닫기">×</button>
-        <p class="eyebrow">PRE-REGISTER</p>
-        <h2 id="dialog-title">데모 사전예약</h2>
-        <p class="dialog-description">신청 폼 연동 전 화면 데모입니다. 입력 정보는 전송되거나 저장되지 않습니다.</p>
-        <label>
-          <span>선택한 체험</span>
-          <input id="dialog-option" name="option" type="text" readonly />
-        </label>
-        <label>
-          <span>이름</span>
-          <input name="name" type="text" placeholder="이름을 입력해 주세요" required />
-        </label>
-        <label>
-          <span>이메일</span>
-          <input name="email" type="email" placeholder="안내받을 이메일을 입력해 주세요" required />
-        </label>
-        <label class="agreement">
-          <input name="privacy" type="checkbox" required />
-          <span>개인정보 수집·이용에 동의합니다.</span>
-        </label>
-        <button class="button dialog-submit" type="submit">사전예약 화면 확인하기</button>
-      </form>
-      <div class="success-state" hidden>
-        <span class="success-icon" aria-hidden="true">✓</span>
-        <h2>신청 흐름을 확인했어요.</h2>
-        <p>실제 데이터 수집 도구를 연결하면<br />사전예약을 받을 수 있습니다.</p>
-        <button class="button" type="button" id="close-success">확인</button>
-      </div>
-    </dialog>
+        // ---- radar (지원자 리포트의 AI 역량 분석 값) ----
+        (function () {
+          var axes = [
+            ["성장가능성", 92],
+            ["일관성", 81],
+            ["문제해결력", 74],
+            ["논리성", 96],
+            ["협업·팀워크", 64],
+            ["대처능력", 54],
+          ];
+          var svg = document.getElementById("radar"),
+            NS = "http://www.w3.org/2000/svg",
+            c = 100,
+            R = 66,
+            html = "";
+          function pt(i, r) {
+            var a = -Math.PI / 2 + (i * Math.PI) / 3;
+            return [c + r * Math.cos(a), c + r * Math.sin(a)];
+          }
+          [1, 0.66, 0.33].forEach(function (k) {
+            html +=
+              '<polygon points="' +
+              axes
+                .map(function (_, i) {
+                  return pt(i, R * k).join(",");
+                })
+                .join(" ") +
+              '" fill="none" stroke="#E2E8F0"/>';
+          });
+          axes.forEach(function (ax, i) {
+            var p = pt(i, R),
+              l = pt(i, R + 17);
+            html +=
+              '<line x1="100" y1="100" x2="' +
+              p[0] +
+              '" y2="' +
+              p[1] +
+              '" stroke="#E2E8F0"/>';
+            html +=
+              '<text x="' +
+              l[0] +
+              '" y="' +
+              (l[1] + 3) +
+              '" text-anchor="middle">' +
+              ax[0] +
+              "</text>";
+          });
+          html +=
+            '<polygon class="shape" points="' +
+            axes
+              .map(function (ax, i) {
+                return pt(i, (R * ax[1]) / 100).join(",");
+              })
+              .join(" ") +
+            '" fill="rgba(96,165,250,.45)" stroke="#60A5FA" stroke-width="1.5"/>';
+          svg.innerHTML = html;
+        })();
 
-    <script src="./script.js"></script>
+        // ---- 개인 대시보드: 프레임 폭에 맞춰 축소, 카메라는 기업 매칭 카드로 ----
+        (function () {
+          var shot = document.getElementById("dashShot"),
+            cam = document.getElementById("dashCam"),
+            dash = document.getElementById("dash"),
+            match = document.getElementById("dashMatch");
+          function fit() {
+            var w = shot.clientWidth;
+            if (!w) return;
+            var m = w < 520;
+            dash.classList.toggle("m", m);
+            var k = w / (m ? 420 : 1316);
+            dash.style.transform = "scale(" + k + ")";
+            shot.style.height = Math.ceil(dash.offsetHeight * k) + "px";
+            var x = match.offsetWidth / 2,
+              y = match.offsetHeight / 2,
+              el = match;
+            while (el && el !== dash) {
+              x += el.offsetLeft;
+              y += el.offsetTop;
+              el = el.offsetParent;
+            }
+            // 좁은 화면에서는 카드 왼쪽(아이콘)을 기준으로 덜 확대해 잘리지 않게
+            if (m) x -= match.offsetWidth / 2 - 24;
+            cam.style.setProperty("--z", m ? 1.3 : 1.75);
+            cam.style.transformOrigin =
+              (x * k).toFixed(1) + "px " + (y * k).toFixed(1) + "px";
+          }
+          fit();
+          window.addEventListener("resize", fit);
+          if (document.fonts && document.fonts.ready)
+            document.fonts.ready.then(fit);
+        })();
+
+        // ---- wave-line terrain ----
+        var cv = document.getElementById("terrain"),
+          g = cv.getContext("2d");
+        var W = 0,
+          H = 0,
+          terrainOn = !reduce,
+          clock = 0,
+          last = 0;
+        var LOOP = durations.reduce(function (a, b) {
+          return a + b;
+        }, 0);
+        var BG = "#030407";
+        var L = (function () {
+          var v = [-0.55, 0.75, -0.35],
+            m = Math.hypot(v[0], v[1], v[2]);
+          return [v[0] / m, v[1] / m, v[2] / m];
+        })();
+        function size() {
+          var dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+          W = cv.clientWidth;
+          H = cv.clientHeight;
+          cv.width = Math.round(W * dpr);
+          cv.height = Math.round(H * dpr);
+          g.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+        function height(x, z, t) {
+          var ridge =
+            Math.exp(-Math.pow(x + 0.35 - 0.25 * Math.sin(t), 2) * 1.6) *
+            (0.4 + 0.22 * Math.sin(0.55 * z - t + 0.8));
+          return (
+            0.34 * Math.sin(1.05 * x + 0.42 * z + t) +
+            0.22 * Math.sin(0.62 * x - 0.78 * z + 2 * t + 1.3) +
+            0.12 * Math.sin(1.9 * x + 1.4 * z - t + 2.1) +
+            0.06 * Math.sin(3.2 * x - 2.1 * z + 3 * t + 0.4) +
+            ridge
+          );
+        }
+        function draw() {
+          var t = ((clock % LOOP) / LOOP) * Math.PI * 2;
+          var small = W < 640,
+            ROWS = small ? 50 : 76,
+            PTS = small ? 90 : 140;
+          var tall = H > W,
+            f = Math.min(H * 0.9, W * 1.1),
+            horizon = H * (tall ? 0.3 : 0.26),
+            camH = tall ? 2.3 : 2.0,
+            zN = 1.3,
+            zF = 10,
+            amp = tall ? 0.95 : 1.15;
+          g.fillStyle = BG;
+          g.fillRect(0, 0, W, H);
+          g.lineJoin = "round";
+          var px = new Array(PTS),
+            py = new Array(PTS),
+            lit = new Array(PTS);
+          for (var r = ROWS - 1; r >= 0; r--) {
+            var z = zN + (zF - zN) * (r / (ROWS - 1)),
+              xm = (W / 2 / f) * z * 1.2,
+              fade = 1 - (z - zN) / (zF - zN),
+              p;
+            for (p = 0; p < PTS; p++) {
+              var x = -xm + (2 * xm * p) / (PTS - 1),
+                y = amp * height(x, z, t),
+                e = 0.03;
+              var dx = (amp * height(x + e, z, t) - y) / e,
+                dz = (amp * height(x, z + e, t) - y) / e,
+                nm = Math.hypot(dx, 1, dz);
+              lit[p] = Math.max(0, (-dx * L[0] + L[1] - dz * L[2]) / nm);
+              px[p] = W / 2 + (x * f) / z;
+              py[p] = horizon + ((camH - y) * f) / z;
+            }
+            g.beginPath();
+            g.moveTo(px[0], py[0]);
+            for (p = 1; p < PTS; p++) g.lineTo(px[p], py[p]);
+            g.lineTo(W + 10, H + 10);
+            g.lineTo(-10, H + 10);
+            g.closePath();
+            g.fillStyle = BG;
+            g.fill();
+            g.lineWidth = 0.55 + 1.0 * fade;
+            var grad = g.createLinearGradient(px[0], 0, px[PTS - 1], 0),
+              span = px[PTS - 1] - px[0];
+            for (p = 0; p < PTS; p += 3) {
+              var a =
+                (0.1 + 0.8 * Math.pow(lit[p], 2.4)) * (0.18 + 0.82 * fade);
+              grad.addColorStop(
+                Math.min(Math.max((px[p] - px[0]) / span, 0), 1),
+                "rgba(226,232,240," + a.toFixed(3) + ")",
+              );
+            }
+            g.strokeStyle = grad;
+            g.beginPath();
+            g.moveTo(px[0], py[0]);
+            for (p = 1; p < PTS; p++) g.lineTo(px[p], py[p]);
+            g.stroke();
+          }
+        }
+        function frame(now) {
+          if (terrainOn) {
+            var dt = last ? now - last : 0;
+            if (dt > 30 || !last) {
+              clock += Math.min(dt, 100);
+              last = now;
+              draw();
+            }
+          } else last = 0;
+          requestAnimationFrame(frame);
+        }
+        size();
+        draw();
+        window.addEventListener("resize", function () {
+          size();
+          draw();
+        });
+        if (!reduce) requestAnimationFrame(frame);
+
+        // ---- timed scene sequence ----
+        var i = 0,
+          timer = null,
+          started = 0,
+          remaining = durations[0],
+          playing = true,
+          scoreTimer = null;
+        function show(n) {
+          scenes.forEach(function (s) {
+            if (s.classList.contains("on")) {
+              s.classList.remove("on");
+              s.classList.add("out");
+              clearTimeout(s._t);
+              s._t = setTimeout(function () {
+                s.classList.remove("out");
+              }, 500);
+            }
+          });
+          void film.offsetWidth;
+          scenes[n].classList.remove("out");
+          clearTimeout(scenes[n]._t);
+          scenes[n].classList.add("on");
+          if (n === PROFILE) runScore();
+        }
+        function runScore() {
+          var out = document.getElementById("score"),
+            v = 0;
+          out.textContent = 0;
+          clearInterval(scoreTimer);
+          setTimeout(function () {
+            scoreTimer = setInterval(function () {
+              v += 4;
+              if (v >= 88) {
+                v = 88;
+                clearInterval(scoreTimer);
+              }
+              out.textContent = v;
+            }, 30);
+          }, 500);
+        }
+        function schedule(ms) {
+          started = Date.now();
+          remaining = ms;
+          timer = setTimeout(next, ms);
+        }
+        function next() {
+          i = (i + 1) % scenes.length;
+          show(i);
+          schedule(durations[i]);
+        }
+        function setAnim(state) {
+          film
+            .querySelectorAll(
+              ".scene.on, .scene.on *, .scene.out, .scene.out *",
+            )
+            .forEach(function (el) {
+              el.style.animationPlayState = state;
+            });
+        }
+        function pause() {
+          if (!playing) return;
+          playing = false;
+          terrainOn = false;
+          clearTimeout(timer);
+          remaining -= Date.now() - started;
+          setAnim("paused");
+        }
+        function play() {
+          if (playing) return;
+          playing = true;
+          terrainOn = true;
+          setAnim("running");
+          schedule(Math.max(remaining, 300));
+        }
+
+        var btn = document.getElementById("pause"),
+          userPaused = false;
+        btn.addEventListener("click", function () {
+          userPaused = playing;
+          if (playing) pause();
+          else play();
+          btn.setAttribute("aria-pressed", String(!playing));
+          btn.setAttribute(
+            "aria-label",
+            playing ? "영상 일시정지" : "영상 재생",
+          );
+          document.getElementById("icon").innerHTML = playing
+            ? '<rect x="2" y="1" width="3.5" height="12" rx="1"/><rect x="8.5" y="1" width="3.5" height="12" rx="1"/>'
+            : '<path d="M3 1.5v11l9-5.5z"/>';
+        });
+
+        if (reduce) {
+          scenes[PROFILE].classList.add("on");
+          document.getElementById("score").textContent = 88;
+          playing = false;
+          btn.hidden = true;
+        } else {
+          show(0);
+          schedule(durations[0]);
+        }
+
+        // ---- demo option selection (API integration will replace only the submit handler) ----
+        var options = Array.prototype.slice.call(
+          document.querySelectorAll(".demo-option"),
+        );
+        var selectedOption = document.getElementById("selected-option");
+        options.forEach(function (option) {
+          option.addEventListener("click", function () {
+            options.forEach(function (item) {
+              item.setAttribute("aria-checked", String(item === option));
+            });
+            selectedOption.textContent = option.getAttribute("data-option");
+          });
+        });
+        var reservationForm = document.getElementById("reservation-form");
+        var reservationMessage = document.getElementById("reservation-message");
+        reservationForm.addEventListener("submit", function (event) {
+          event.preventDefault();
+          if (!reservationForm.reportValidity()) return;
+          reservationMessage.textContent =
+            "사전예약 저장 기능을 준비 중입니다. 정식 접수 연결 후 이 입력을 저장합니다.";
+          reservationMessage.classList.add("show");
+        });
+
+        // ---- product screens: scroll-driven zoom story ----
+        var productStory = document.getElementById("product-story");
+        var storyScreens = Array.prototype.slice.call(
+          document.querySelectorAll(".story-screen"),
+        );
+        var storyNumber = document.getElementById("story-number");
+        var storyTitle = document.getElementById("story-title");
+        var storyDescription = document.getElementById("story-description");
+        function updateProductStory() {
+          if (reduce || !productStory || !storyScreens.length) return;
+          var storyRect = productStory.getBoundingClientRect();
+          var travel = Math.max(productStory.offsetHeight - window.innerHeight, 1);
+          var progress = Math.min(Math.max(-storyRect.top / travel, 0), 1);
+          var focus = progress * (storyScreens.length - 1);
+          var active = Math.round(focus);
+          storyScreens.forEach(function (screen, index) {
+            var distance = Math.abs(index - focus);
+            var visibility = Math.max(0, 1 - distance * 1.15);
+            var scale = 0.84 + visibility * 0.16;
+            screen.style.opacity = visibility.toFixed(3);
+            screen.style.transform = "translateY(" + ((index - focus) * 26).toFixed(1) + "px) scale(" + scale.toFixed(3) + ")";
+          });
+          var activeScreen = storyScreens[active];
+          storyNumber.textContent = "0" + (active + 1) + " / 0" + storyScreens.length;
+          storyTitle.textContent = activeScreen.getAttribute("data-title");
+          storyDescription.textContent = activeScreen.getAttribute("data-description");
+        }
+
+        // ---- scroll ----
+        var ticking = false;
+        function onScroll() {
+          var stageRect = stage.getBoundingClientRect();
+          var dist = stage.offsetHeight - window.innerHeight;
+          var p = Math.min(Math.max(-stageRect.top / dist, 0), 1);
+          film.style.setProperty("--p", p.toFixed(3));
+          head.classList.toggle("solid", stageRect.bottom <= 0);
+          updateProductStory();
+          if (!reduce && !userPaused) {
+            if (stageRect.bottom <= 0) pause();
+            else play();
+          }
+          ticking = false;
+        }
+        window.addEventListener(
+          "scroll",
+          function () {
+            if (!ticking) {
+              ticking = true;
+              requestAnimationFrame(onScroll);
+            }
+          },
+          { passive: true },
+        );
+        window.addEventListener("resize", onScroll);
+        onScroll();
+      })();
+    </script>
   </body>
 </html>
