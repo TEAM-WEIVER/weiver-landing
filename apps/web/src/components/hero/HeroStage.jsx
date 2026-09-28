@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import TerrainCanvas from './TerrainCanvas';
 import ScenePlayer from './ScenePlayer';
 
-export default function HeroStage({ scenes }) {
+export default function HeroStage({ scenes, onSceneEnter }) {
   const filmRef = useRef(null);
   const stageRef = useRef(null);
   const [playing, setPlaying] = useState(true);
@@ -65,6 +65,7 @@ export default function HeroStage({ scenes }) {
             scenes={scenes}
             playing={playing}
             onTogglePause={handleTogglePause}
+            onSceneEnter={onSceneEnter}
           />
         </div>
       </section>
