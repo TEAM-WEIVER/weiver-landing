@@ -1,0 +1,47 @@
+:root {
+  --slate-500: #64748b;
+  --slate-700: #334155;
+  --text-primary: #0f172a;
+  --teal: #2dd4bf;
+  --blue: #60a5fa;
+  --bg: var(--slate-500);
+  --surface: #ffffff;
+  --ink: var(--text-primary);
+  --muted: var(--slate-500);
+  --line: #e2e8f0;
+  --btn: var(--slate-700);
+  --btn-ink: #ffffff;
+  --film: #030407;
+  --film-ink: #f1f5f9;
+  --film-soft: #94a3b8;
+  --hi: #5eead4;
+  --font:
+    "IBM Plex Sans KR", "Pretendard", "Apple SD Gothic Neo",
+    "Malgun Gothic", system-ui, sans-serif;
+
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: var(--slate-500);
+    --surface: #1e293b;
+    --ink: #e2e8f0;
+    --muted: #94a3b8;
+    --line: #334155;
+    --btn: #e2e8f0;
+    --btn-ink: #0f172a;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: var(--slate-500);
+  --surface: #1e293b;
+  --ink: #e2e8f0;
+  --muted: #94a3b8;
+  --line: #334155;
+  --btn: #e2e8f0;
+  --btn-ink: #0f172a;
+}
