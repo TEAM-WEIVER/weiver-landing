@@ -3,3 +3,9 @@ node_modules/
 apps/web/node_modules/
 package-lock.json
 apps/web/package-lock.json
+.env
+
+# Gradle
+apps/api/.gradle/
+apps/api/build/
+apps/api/HELP.md
