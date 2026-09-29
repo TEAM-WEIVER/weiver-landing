@@ -19,3 +19,4 @@ management:
 
 app:
   web-allowed-origin: ${WEB_ALLOWED_ORIGIN:http://localhost:5173}
+  admin-token: ${ADMIN_TOKEN:dev-token}
