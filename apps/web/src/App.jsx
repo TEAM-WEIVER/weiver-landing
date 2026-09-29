@@ -1,4 +1,5 @@
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
+import { bootstrap, track } from './api';
 import SiteHeader from './components/SiteHeader';
 import HeroStage from './components/hero/HeroStage';
 import ContentSections from './components/ContentSections';
@@ -16,6 +17,12 @@ const SCENE_CLASS_NAMES = ['s1', 's2', 's3', 's4', 's4b', 's5a', 's5b', 's6'];
 
 export default function App() {
   const scene4EnterRef = useRef(null);
+
+  useEffect(() => {
+    bootstrap().then((visitorId) => {
+      if (visitorId) track('page_view');
+    });
+  }, []);
 
   function handleSceneEnter(n) {
     if (n === PROFILE_IDX && scene4EnterRef.current) {
