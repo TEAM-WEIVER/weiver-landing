@@ -6,9 +6,13 @@
   ],
   "scripts": {
     "dev:web": "npm run dev --workspace=@weiver/web",
-    "build:web": "npm run build --workspace=@weiver/web"
+    "build:web": "npm run build --workspace=@weiver/web",
+    "swagger": "docker run --rm -p 8082:8080 -e SWAGGER_JSON=/spec/openapi.yaml -v \"$(pwd)/docs/spec:/spec\" swaggerapi/swagger-ui"
   },
   "engines": {
     "node": ">=20"
+  },
+  "dependencies": {
+    "@supabase/server": "^1.8.1"
   }
 }

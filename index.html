@@ -6,6 +6,8 @@
       name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover"
     />
+    <!-- 빈 값이면 로컬은 localhost:8080, 배포는 api.weiver.app을 사용합니다. -->
+    <meta name="weiver-api-base-url" content="" />
     <title>weiver | 한 번 준비하고, 여러 기업에게 먼저 제안받으세요</title>
     <link rel="icon" type="image/png" href="assets/favicon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -2058,12 +2060,17 @@
       <a class="wordmark" href="#top" aria-label="weiver 홈"
         ><span class="logo" role="img" aria-label="weiver"></span
       ></a>
-      <a class="btn btn-sm" href="#reserve">사전예약</a>
+      <a
+        class="btn btn-sm"
+        href="#reserve"
+        data-cta-id="header_reserve"
+        data-section-id="header"
+      >사전예약</a>
     </header>
 
     <main id="top">
       <div class="stage" id="stage">
-        <section class="hero" aria-label="서비스 소개 영상">
+        <section class="hero" data-section-id="hero" aria-label="서비스 소개 영상">
           <div class="film" id="film">
             <canvas class="terrain" id="terrain" aria-hidden="true"></canvas>
             <div class="scrim" aria-hidden="true"></div>
@@ -2441,7 +2448,7 @@
 
       <div class="content">
         <div class="wrap">
-          <section class="lead">
+          <section class="lead" data-section-id="lead">
             <p class="tagline">
               이력서를 더 많이 보내는 대신, 나를 더 잘 보여주는 방법
             </p>
@@ -2451,7 +2458,7 @@
               역량 프로필로 만들면, 맞는 기업이 먼저 당신을 발견합니다.
             </p>
             <div class="ctas">
-              <a class="btn btn-lg btn-primary" href="#reserve"
+              <a class="btn btn-lg btn-primary" href="#reserve" data-cta-id="lead_reserve" data-section-id="lead"
                 >내 프로필로 시작하기</a
               >
               <a class="btn btn-lg btn-ghost" href="#profile"
@@ -2462,6 +2469,7 @@
           <section
             class="manifesto"
             id="profile"
+            data-section-id="profile"
             aria-labelledby="profile-title"
           >
             <div class="manifesto-intro">
@@ -2494,7 +2502,7 @@
               </article>
             </div>
           </section>
-          <section class="steps" id="how">
+          <section class="steps" id="how" data-section-id="how">
             <h2>한 번 만든 프로필이 새로운 기회로 이어집니다.</h2>
             <ol>
               <li>
@@ -2590,7 +2598,7 @@
               </div>
             </div>
           </section>
-          <section class="why" aria-labelledby="why-title">
+          <section class="why" data-section-id="why" aria-labelledby="why-title">
             <p class="section-kicker">WHY WEIVER</p>
             <h2 id="why-title">
               기업마다 반복하던 지원 과정, 이제 한 번이면 충분해요.
@@ -2616,7 +2624,7 @@
               </article>
             </div>
           </section>
-          <section class="demo" id="reserve" aria-labelledby="demo-title">
+          <section class="demo" id="reserve" data-section-id="reserve" aria-labelledby="demo-title">
             <div class="demo-head">
               <div>
                 <p class="section-kicker">DEMO TESTER</p>
@@ -2717,6 +2725,108 @@
 
     <script>
       (function () {
+        // ---- anonymous analytics -------------------------------------------------
+        // Events are deliberately limited to page/section/CTA identifiers. Never put
+        // form values or other personally identifiable information in properties.
+        var apiMeta = document.querySelector('meta[name="weiver-api-base-url"]');
+        var apiBaseUrl = apiMeta && apiMeta.content.trim();
+        if (!apiBaseUrl) {
+          apiBaseUrl = location.hostname === "localhost"
+            ? "http://localhost:8080"
+            : "https://api.weiver.app";
+        }
+        apiBaseUrl = apiBaseUrl.replace(/\/$/, "");
+
+        function createId() {
+          if (window.crypto && window.crypto.randomUUID) return window.crypto.randomUUID();
+          return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+            var r = (Math.random() * 16) | 0;
+            return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
+          });
+        }
+
+        var sessionId = sessionStorage.getItem("weiver_landing_session_id");
+        if (!sessionId) {
+          sessionId = createId();
+          sessionStorage.setItem("weiver_landing_session_id", sessionId);
+        }
+
+        function utmParams() {
+          var params = new URLSearchParams(location.search);
+          var utm = {};
+          ["source", "medium", "campaign", "content", "term"].forEach(function (name) {
+            var value = params.get("utm_" + name);
+            if (value) utm[name] = value.slice(0, 200);
+          });
+          return utm;
+        }
+
+        function request(path, body, keepalive) {
+          return fetch(apiBaseUrl + path, {
+            method: "POST",
+            credentials: "include",
+            keepalive: Boolean(keepalive),
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+          });
+        }
+
+        var analyticsReady = request("/api/v1/visitors/bootstrap", {
+          sessionId: sessionId,
+          path: location.pathname,
+          referrer: document.referrer || null,
+          utm: utmParams(),
+        })
+          .then(function (response) {
+            if (!response.ok) throw new Error("visitor bootstrap failed");
+            return response.json();
+          })
+          .catch(function () {
+            // Analytics must never block the landing page or CTA navigation.
+            return null;
+          });
+
+        function track(eventName, properties) {
+          analyticsReady.then(function (visitor) {
+            if (!visitor) return;
+            request("/api/v1/events", {
+              visitorId: visitor.visitorId,
+              sessionId: sessionId,
+              eventName: eventName,
+              path: location.pathname,
+              properties: properties || {},
+            }, true).catch(function () {});
+          });
+        }
+
+        analyticsReady.then(function (visitor) {
+          if (visitor) track("page_view");
+        });
+
+        var seenSections = new Set();
+        var sectionObserver = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            var sectionId = entry.target.getAttribute("data-section-id");
+            if (!entry.isIntersecting || entry.intersectionRatio < 0.5 || seenSections.has(sectionId)) return;
+            seenSections.add(sectionId);
+            track("section_view", { sectionId: sectionId, threshold: "50" });
+            sectionObserver.unobserve(entry.target);
+          });
+        }, { threshold: [0.5] });
+        document.querySelectorAll("[data-section-id]").forEach(function (section) {
+          if (section.tagName === "SECTION") sectionObserver.observe(section);
+        });
+
+        document.querySelectorAll("[data-cta-id]").forEach(function (cta) {
+          cta.addEventListener("click", function () {
+            track("cta_clicked", {
+              ctaId: cta.getAttribute("data-cta-id"),
+              sectionId: cta.getAttribute("data-section-id"),
+              target: "reserve",
+            });
+          });
+        });
+
         var reduce = window.matchMedia(
           "(prefers-reduced-motion: reduce)",
         ).matches;
@@ -3053,6 +3163,12 @@
         });
         var reservationForm = document.getElementById("reservation-form");
         var reservationMessage = document.getElementById("reservation-message");
+        var reservationOpened = false;
+        reservationForm.addEventListener("focusin", function () {
+          if (reservationOpened) return;
+          reservationOpened = true;
+          track("reserve_opened", { sectionId: "reserve" });
+        });
         reservationForm.addEventListener("submit", function (event) {
           event.preventDefault();
           if (!reservationForm.reportValidity()) return;
