@@ -32,6 +32,13 @@
 
 `page_view`는 같은 `visitor_id + session_id + path` 조합에서 1회만 저장합니다. 이 규칙은 새로고침으로 유입을 부풀리지 않기 위함입니다.
 
+## 콘텐츠·CTA 측정
+
+- `section_view`: 섹션이 화면에 50% 이상 최초 노출될 때 세션당 한 번 기록합니다. `properties.sectionId`는 `hero`, `lead`, `profile`, `how`, `why`, `reserve` 중 하나입니다.
+- `cta_clicked`: CTA를 누를 때 기록합니다. `properties.ctaId`는 `header_reserve`, `lead_reserve`처럼 위치와 목적이 드러나는 값이며, `properties.sectionId`를 함께 기록합니다.
+
+`section_view`는 콘텐츠를 본 집단을 나누기 위한 관찰 지표입니다. 이 이벤트만으로 특정 섹션이 전환을 *유발했다*고 해석하지 않으며, 카피·배치 변경 전후 또는 A/B 테스트와 함께 판단합니다.
+
 ## 예약 유형
 
 - `QUICK_AI_INTERVIEW`: 간편 AI 면접 체험

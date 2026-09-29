@@ -104,7 +104,7 @@ JPA는 도입하지 않는다. 스키마가 Supabase migration으로 고정되�
 | --- | --- | --- | --- |
 | `visitors` | `uuid` | `first_seen_at`, `last_seen_at`, `first_utm` | — |
 | `landing_sessions` | `uuid` | `visitor_id`, `landing_path`, `referrer`, `utm` | FK → visitors |
-| `tracking_events` | `uuid` (auto) | `visitor_id`, `session_id`, `event_name`, `path` | `event_name` 3개 값 제한; `page_view`는 세션+경로 unique |
+| `tracking_events` | `uuid` (auto) | `visitor_id`, `session_id`, `event_name`, `path`, `properties` | `page_view`, `reserve_opened`, `reservation_completed`, `section_view`, `cta_clicked`; `page_view`는 세션+경로, `section_view`는 세션+섹션별 1회 |
 | `reservations` | `uuid` (auto) | `email`, `normalized_email` (generated), `reservation_type`, `privacy_consent_at` | `normalized_email` unique |
 
 **뷰**: `daily_landing_funnel` — 일별 방문자/세션/전환율 집계. `GET /api/v1/admin/metrics`가 이 뷰를 직접 조회한다.
