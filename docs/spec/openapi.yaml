@@ -1,0 +1,328 @@
+openapi: 3.0.3
+info:
+  title: weiver Landing API
+  version: 0.1.0
+  description: |
+    weiver 데모 테스터 모집 랜딩페이지 API.
+    방문자 식별(F1), 이벤트 트래킹(F2), 사전예약(F3), 어드민 지표(F4)로 구성됩니다.
+
+servers:
+  - url: http://localhost:8080
+    description: local
+  - url: https://api.weiver.app
+    description: production
+
+tags:
+  - name: Visitor
+    description: 방문자 식별 및 세션 관리
+  - name: Event
+    description: 행동 이벤트 트래킹 (fire-and-forget)
+  - name: Reservation
+    description: 데모 테스터 사전예약
+  - name: Admin
+    description: 운영자 전용 지표 조회
+
+paths:
+
+  /api/v1/visitors/bootstrap:
+    post:
+      tags: [Visitor]
+      summary: 방문자 부트스트랩
+      description: |
+        `visitor_id` 쿠키 유무에 따라 신규 방문자를 등록하거나 재방문자를 갱신합니다.
+        세션(`sessionId`)은 항상 `landing_sessions`에 upsert됩니다.
+      operationId: bootstrap
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BootstrapRequest'
+            examples:
+              new_visitor:
+                summary: 신규 방문자 (쿠키 없음)
+                value:
+                  sessionId: "550e8400-e29b-41d4-a716-446655440000"
+                  path: "/"
+                  utm:
+                    source: "google"
+                    medium: "cpc"
+      responses:
+        '200':
+          description: 방문자 ID 발급 또는 갱신 성공
+          headers:
+            Set-Cookie:
+              description: "visitor_id=<uuid>; HttpOnly; SameSite=Lax; Max-Age=15552000"
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BootstrapResponse'
+
+  /api/v1/events:
+    post:
+      tags: [Event]
+      summary: 이벤트 트래킹
+      description: |
+        랜딩 페이지 내 사용자 행동을 기록합니다.
+        DB 오류가 발생해도 **항상 200을 반환**합니다 (fire-and-forget).
+      operationId: trackEvent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrackEventRequest'
+            examples:
+              page_view:
+                summary: 페이지 뷰
+                value:
+                  visitorId: "550e8400-e29b-41d4-a716-446655440000"
+                  sessionId: "660e8400-e29b-41d4-a716-446655440001"
+                  eventName: "page_view"
+                  path: "/"
+      responses:
+        '200':
+          description: 항상 성공 (DB 오류 포함)
+        '400':
+          $ref: '#/components/responses/InvalidRequest'
+
+  /api/v1/reservations:
+    post:
+      tags: [Reservation]
+      summary: 사전예약 등록
+      operationId: reserve
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateReservationRequest'
+            examples:
+              quick_ai:
+                summary: 간편 AI 면접 체험
+                value:
+                  visitorId: "550e8400-e29b-41d4-a716-446655440000"
+                  sessionId: "660e8400-e29b-41d4-a716-446655440001"
+                  name: "홍길동"
+                  email: "test@example.com"
+                  reservationType: "QUICK_AI_INTERVIEW"
+                  privacyConsentAt: "2026-09-29T09:00:00Z"
+      responses:
+        '201':
+          description: 예약 완료
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReservationCreatedResponse'
+        '400':
+          $ref: '#/components/responses/InvalidRequest'
+        '409':
+          description: 이메일 중복
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "DUPLICATE_EMAIL"
+
+  /api/v1/admin/metrics:
+    get:
+      tags: [Admin]
+      summary: 일별 전환 퍼널 지표
+      description: |
+        `daily_landing_funnel` 뷰 기반 날짜 내림차순 집계 데이터.
+        `Authorization: Bearer <ADMIN_TOKEN>` 헤더 필수.
+      operationId: getMetrics
+      security:
+        - adminToken: []
+      responses:
+        '200':
+          description: 지표 목록 (날짜 내림차순)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DailyFunnelRow'
+              example:
+                - day: "2026-09-29"
+                  uniqueVisitors: 120
+                  sessions: 145
+                  reservingVisitors: 18
+                  reservations: 18
+                  visitorConversionRate: 15.00
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+components:
+  securitySchemes:
+    adminToken:
+      type: http
+      scheme: bearer
+      description: "`ADMIN_TOKEN` 환경 변수와 일치해야 합니다"
+
+  schemas:
+    BootstrapRequest:
+      type: object
+      required: [sessionId, path]
+      properties:
+        sessionId:
+          type: string
+          format: uuid
+          description: 탭 단위 UUID (프론트 sessionStorage 생성)
+        path:
+          type: string
+          description: 방문 경로
+          example: "/"
+        referrer:
+          type: string
+          nullable: true
+          description: HTTP Referer
+        utm:
+          $ref: '#/components/schemas/UtmParams'
+
+    BootstrapResponse:
+      type: object
+      required: [visitorId]
+      properties:
+        visitorId:
+          type: string
+          format: uuid
+
+    TrackEventRequest:
+      type: object
+      required: [visitorId, sessionId, eventName, path]
+      properties:
+        visitorId:
+          type: string
+          format: uuid
+        sessionId:
+          type: string
+          format: uuid
+        eventName:
+          type: string
+          enum: [page_view, reserve_opened, reservation_completed, section_view, cta_clicked]
+        path:
+          type: string
+          example: "/"
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+          description: 이벤트별 식별 속성. 개인정보나 폼 입력값은 포함하지 않습니다.
+          example:
+            sectionId: "why"
+
+    CreateReservationRequest:
+      type: object
+      required: [visitorId, sessionId, name, email, reservationType, privacyConsentAt]
+      properties:
+        visitorId:
+          type: string
+          format: uuid
+        sessionId:
+          type: string
+          format: uuid
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        email:
+          type: string
+          format: email
+        reservationType:
+          type: string
+          enum: [QUICK_AI_INTERVIEW, REVERSE_MATCHING]
+        privacyConsentAt:
+          type: string
+          format: date-time
+          description: 개인정보 수집·이용 동의 시각
+          example: "2026-09-29T09:00:00Z"
+        utm:
+          $ref: '#/components/schemas/UtmParams'
+
+    ReservationCreatedResponse:
+      type: object
+      required: [id]
+      properties:
+        id:
+          type: string
+          format: uuid
+
+    DailyFunnelRow:
+      type: object
+      properties:
+        day:
+          type: string
+          format: date
+          example: "2026-09-29"
+        uniqueVisitors:
+          type: integer
+          format: int64
+        sessions:
+          type: integer
+          format: int64
+        reservingVisitors:
+          type: integer
+          format: int64
+        reservations:
+          type: integer
+          format: int64
+        visitorConversionRate:
+          type: number
+          format: double
+          description: "reservingVisitors / uniqueVisitors * 100 (소수점 2자리)"
+          example: 15.00
+
+    UtmParams:
+      type: object
+      nullable: true
+      properties:
+        source:
+          type: string
+          nullable: true
+        medium:
+          type: string
+          nullable: true
+        campaign:
+          type: string
+          nullable: true
+        content:
+          type: string
+          nullable: true
+        term:
+          type: string
+          nullable: true
+
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+          enum:
+            - INVALID_REQUEST
+            - UNAUTHORIZED
+            - DUPLICATE_EMAIL
+            - INTERNAL_ERROR
+
+  responses:
+    InvalidRequest:
+      description: 요청 유효성 검사 실패
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: "INVALID_REQUEST"
+
+    Unauthorized:
+      description: 인증 실패
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: "UNAUTHORIZED"
