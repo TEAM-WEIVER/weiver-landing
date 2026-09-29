@@ -25,7 +25,7 @@ create table public.tracking_events (
   id uuid primary key default gen_random_uuid(),
   visitor_id uuid not null references public.visitors(id) on delete cascade,
   session_id uuid not null references public.landing_sessions(id) on delete cascade,
-  event_name text not null check (event_name in ('page_view', 'reserve_opened', 'reservation_completed')),
+  event_name text not null check (event_name in ('page_view', 'reserve_opened', 'reservation_completed', 'section_view', 'cta_clicked')),
   path text not null,
   occurred_at timestamptz not null default now(),
   properties jsonb not null default '{}'::jsonb
@@ -34,6 +34,9 @@ create unique index tracking_events_one_page_view_per_session_path_idx
   on public.tracking_events(visitor_id, session_id, path)
   where event_name = 'page_view';
 create index tracking_events_occurred_at_idx on public.tracking_events(occurred_at);
+create unique index tracking_events_one_section_view_per_session_section_idx
+  on public.tracking_events(visitor_id, session_id, (properties->>'sectionId'))
+  where event_name = 'section_view';
 
 create table public.reservations (
   id uuid primary key default gen_random_uuid(),
