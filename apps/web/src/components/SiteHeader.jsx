@@ -20,7 +20,11 @@ export default function SiteHeader() {
       <a className="wordmark" href="#top" aria-label="weiver 홈">
         <span className="logo" role="img" aria-label="weiver" />
       </a>
-      <a className="btn btn-sm" href="#reserve">
+      <a
+        className="btn btn-sm"
+        href="#reserve"
+        onClick={(e) => { e.preventDefault(); document.querySelector('section.demo')?.scrollIntoView({ behavior: 'smooth' }); }}
+      >
         사전예약
       </a>
     </header>
