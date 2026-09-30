@@ -49,8 +49,7 @@ export default function DemoSection() {
     <section className="demo" id="reserve" aria-labelledby="demo-title" data-section-id="reserve">
       <div className="demo-head">
         <div>
-          <p className="section-kicker">DEMO TESTER</p>
-          <h2 id="demo-title">나에게 맞는 방식으로 weiver를 먼저 경험해 보세요.</h2>
+          <h2 id="demo-title">나에게 맞는 방식으로 <span className="logo" role="img" aria-label="weiver" style={{ display: 'inline-block', height: '0.85em', verticalAlign: 'middle', color: 'currentColor' }} />를 먼저 경험해 보세요.</h2>
         </div>
         <p>두 가지 방식 중 하나를 선택해 AI 면접과 역량 검증 과정을 먼저 경험할 수 있어요.</p>
       </div>

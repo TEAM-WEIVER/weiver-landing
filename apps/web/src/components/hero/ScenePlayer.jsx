@@ -40,7 +40,8 @@ export default function ScenePlayer({ scenes, playing, onTogglePause, onSceneEnt
     s.remaining = ms;
     clearTimeout(s.timer);
     s.timer = setTimeout(() => {
-      s.idx = (s.idx + 1) % DURATIONS.length;
+      if (s.idx + 1 >= DURATIONS.length) return;
+      s.idx = s.idx + 1;
       showScene(s.idx);
       schedule(DURATIONS[s.idx]);
     }, ms);
