@@ -1,10 +1,18 @@
 const BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:8080';
 
+function uuid() {
+  if (crypto.randomUUID) return crypto.randomUUID();
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = Math.random() * 16 | 0;
+    return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+  });
+}
+
 // sessionStorage 단위 탭 ID
 function getSessionId() {
   let id = sessionStorage.getItem('session_id');
   if (!id) {
-    id = crypto.randomUUID();
+    id = uuid();
     sessionStorage.setItem('session_id', id);
   }
   return id;

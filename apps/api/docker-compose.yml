@@ -1,0 +1,7 @@
+services:
+  api:
+    image: mjin2/weiver-landing-api:latest
+    restart: always
+    ports:
+      - "8080:8080"
+    env_file: .env
