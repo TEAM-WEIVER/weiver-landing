@@ -1,8 +1,7 @@
 .vercel
 node_modules/
 apps/web/node_modules/
-package-lock.json
-apps/web/package-lock.json
+
 .env
 .env.local
 apps/web/.env.local
