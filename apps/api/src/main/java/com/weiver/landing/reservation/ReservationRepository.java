@@ -3,6 +3,7 @@ package com.weiver.landing.reservation;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
 import java.util.UUID;
 
 @Repository
@@ -28,7 +29,7 @@ public class ReservationRepository {
             .param("name", req.name())
             .param("email", req.email())
             .param("type", req.reservationType())
-            .param("consentAt", req.privacyConsentAt())
+            .param("consentAt", Timestamp.from(req.privacyConsentAt()))
             .param("utm", utmJson)
             .update();
         return id;
